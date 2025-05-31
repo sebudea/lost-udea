@@ -1,7 +1,16 @@
 import { Box, Button, Typography } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
+import { useNavigate } from "react-router-dom";
 
 export function LostItemForm() {
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    // Aquí iría la autenticación con Google
+    // Por ahora, simulamos que es un usuario nuevo y lo enviamos a registro
+    navigate("/register");
+  };
+
   return (
     <Box sx={{ textAlign: "center", py: 3 }}>
       <Typography
@@ -19,6 +28,7 @@ export function LostItemForm() {
         color="secondary"
         startIcon={<GoogleIcon />}
         size="large"
+        onClick={handleLogin}
       >
         Iniciar sesión con Google
       </Button>

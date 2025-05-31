@@ -63,7 +63,7 @@ El sistema sigue una arquitectura basada en servicios utilizando React para el f
 interface User {
   id: string;
   email: string;
-  fullName: string; // Obtenido de Google Auth
+  fullName: string;
   createdAt: Date;
   // Campos opcionales específicos para seekers
   phoneNumber?: string; // Requerido solo para seekers
@@ -151,24 +151,48 @@ interface ItemBase {
 
 1. **Usuario (User)**:
 
-   - Un usuario puede ser finder, seeker o ambos
-   - Los campos phoneNumber y idNumber son obligatorios solo si el usuario es seeker
-   - El fullName se obtiene automáticamente de Google Auth
-   - El email debe ser válido
+   - Existen dos tipos de registros de usuario:
+     a) Registro rápido (Finder): Solo requiere autenticación con Google (id, email)
+     b) Registro completo (Seeker): Requiere datos adicionales (fullName, phoneNumber, idNumber)
+   - Un mismo usuario puede actuar como finder o seeker sin restricción
+   - El registro completo solo se solicita la primera vez que un usuario intenta reportar un objeto perdido
+   - Los datos adicionales (phoneNumber, idNumber) solo se requieren para reportar objetos perdidos
+   - La fecha de creación (createdAt) se genera automáticamente
 
-2. **Objeto Encontrado (FoundItem)**:
+2. **Flujos de Usuario**:
+
+   a) Flujo de Finder (Reporte Rápido):
+
+   - Usuario encuentra un objeto
+   - Llena el formulario de reporte en la pestaña "Encontré un objeto"
+   - Al enviar, se autentica con Google
+   - Se crea un registro básico de usuario (id, email)
+   - Se guarda el reporte del objeto encontrado
+
+   b) Flujo de Seeker (Objeto Perdido):
+
+   - Usuario accede a la pestaña "Perdí un objeto"
+   - Se autentica con Google
+   - Si es primera vez:
+     - Completa formulario de registro con datos adicionales
+     - Se redirige al home
+   - Si ya está registrado:
+     - Se redirige directamente al home
+   - Puede reportar su objeto perdido
+
+3. **Objeto Encontrado (FoundItem)**:
 
    - La descripción se genera automáticamente usando IA
    - Debe tener una ubicación específica
    - El status sigue el flujo: pending → delivered → matched
 
-3. **Objeto Perdido (LostItem)**:
+4. **Objeto Perdido (LostItem)**:
 
    - Puede tener hasta 2 posibles ubicaciones
    - Requiere descripción manual del usuario
    - El status sigue el flujo: searching → found → closed
 
-4. **Match**:
+5. **Match**:
    - Solo puede existir si hay un LostItem y un FoundItem válidos
    - La fecha de match se establece automáticamente
    - El status refleja el proceso de verificación
