@@ -2,7 +2,7 @@ import { Box, Button, Typography } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useNavigate } from "react-router-dom";
 
-export function LostItemForm() {
+export function LoginForm() {
   const navigate = useNavigate();
 
   const handleLogin = () => {

@@ -151,13 +151,13 @@ interface ItemBase {
 
 1. **Usuario (User)**:
 
-   - Existen dos tipos de registros de usuario:
-     a) Registro rápido (Finder): Solo requiere autenticación con Google (id, email)
-     b) Registro completo (Seeker): Requiere datos adicionales (fullName, phoneNumber, idNumber)
-   - Un mismo usuario puede actuar como finder o seeker sin restricción
-   - El registro completo solo se solicita la primera vez que un usuario intenta reportar un objeto perdido
-   - Los datos adicionales (phoneNumber, idNumber) solo se requieren para reportar objetos perdidos
-   - La fecha de creación (createdAt) se genera automáticamente
+   - El punto de entrada principal para todos los usuarios es la Landing Page con dos tabs:
+     a) "Encontré un objeto": Para reportar objetos encontrados
+     b) "Perdí un objeto": Para iniciar sesión/registrarse (usuarios nuevos y existentes)
+   - Después de autenticarse, los usuarios acceden al Home donde pueden:
+     a) Ver sus objetos reportados
+     b) Acceder al formulario completo para reportar objetos perdidos
+   - Los datos adicionales (phoneNumber, idNumber) solo se solicitan al completar el registro
 
 2. **Flujos de Usuario**:
 

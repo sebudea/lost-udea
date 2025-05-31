@@ -16,7 +16,7 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { useState } from "react";
 import { TabPanel } from "../components/TabPanel/TabPanel";
 import { FoundItemForm } from "../features/items/FoundItemForm";
-import { LostItemForm } from "../features/items/LostItemForm";
+import { LoginForm } from "../features/auth/LoginForm";
 
 interface LandingPageProps {
   isDarkMode: boolean;
@@ -126,7 +126,7 @@ export function LandingPage({ isDarkMode, onToggleTheme }: LandingPageProps) {
             </TabPanel>
 
             <TabPanel value={tabValue} index={1}>
-              <LostItemForm />
+              <LoginForm />
             </TabPanel>
           </Paper>
         </Box>
