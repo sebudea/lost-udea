@@ -17,10 +17,11 @@ export function HomePage({ isDarkMode, onToggleTheme }: HomePageProps) {
       <Container
         maxWidth="md"
         sx={{
-          height: "100%",
+          minHeight: "calc(100vh - 64px)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          py: 4,
         }}
       >
         <Box

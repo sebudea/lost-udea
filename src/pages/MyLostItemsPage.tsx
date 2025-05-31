@@ -77,14 +77,21 @@ export function MyLostItemsPage({
           minHeight: "calc(100vh - 64px)",
           display: "flex",
           alignItems: "flex-start",
-          pt: 4,
+          pt: { xs: 2, sm: 4 },
         }}
       >
-        <Container maxWidth="md" sx={{ pb: 10 }}>
+        <Container
+          maxWidth="md"
+          sx={{ pb: { xs: 8, sm: 10 }, px: { xs: 2, sm: 3 } }}
+        >
           <Typography
             variant="h4"
             component="h1"
-            sx={{ fontWeight: 700, mb: 3 }}
+            sx={{
+              fontWeight: 700,
+              mb: { xs: 2, sm: 3 },
+              fontSize: { xs: "1.75rem", sm: "2.125rem" },
+            }}
           >
             Mis Objetos Perdidos
           </Typography>
@@ -93,156 +100,169 @@ export function MyLostItemsPage({
             <Grid container spacing={3}>
               {mockLostItems.map((item) => (
                 <Grid item xs={12} key={item.id}>
-                  <Card sx={{ display: "flex", height: "220px" }}>
-                    {item.imageUrl && (
-                      <Box
-                        sx={{
-                          width: "180px",
-                          flexShrink: 0,
-                          overflow: "hidden",
-                          position: "relative",
-                        }}
-                      >
-                        <CardMedia
-                          component="img"
-                          sx={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            objectPosition: "center",
-                          }}
-                          image={item.imageUrl}
-                          alt={`Imagen de ${item.type}`}
-                        />
-                      </Box>
-                    )}
+                  <Card>
                     <Box
                       sx={{
-                        flex: 1,
                         display: "flex",
-                        flexDirection: "column",
+                        flexDirection: { xs: "column", sm: "row" },
+                        height: { xs: "auto", sm: "220px" },
                       }}
                     >
-                      <CardContent
-                        sx={{
-                          flex: 1,
-                          pb: 1,
-                          overflow: "auto",
-                        }}
-                      >
+                      {item.imageUrl && (
                         <Box
                           sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            mb: 2,
+                            width: { xs: "100%", sm: "180px" },
+                            height: { xs: "200px", sm: "100%" },
+                            flexShrink: 0,
+                            overflow: "hidden",
+                            position: "relative",
                           }}
                         >
-                          <Typography variant="h6" sx={{ mb: 0 }}>
-                            {item.type}
-                          </Typography>
+                          <CardMedia
+                            component="img"
+                            sx={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              objectPosition: "center",
+                            }}
+                            image={item.imageUrl}
+                            alt={`Imagen de ${item.type}`}
+                          />
+                        </Box>
+                      )}
+                      <Box
+                        sx={{
+                          flex: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <CardContent
+                          sx={{
+                            flex: 1,
+                            pb: 1,
+                            overflow: "auto",
+                          }}
+                        >
                           <Box
                             sx={{
                               display: "flex",
-                              alignItems: "center",
-                              gap: 1.5,
+                              flexDirection: { xs: "column", sm: "row" },
+                              justifyContent: "space-between",
+                              alignItems: { xs: "flex-start", sm: "center" },
+                              gap: { xs: 2, sm: 0 },
+                              mb: 2,
                             }}
                           >
-                            <Button
-                              size="small"
-                              color="info"
-                              startIcon={<SearchIcon fontSize="small" />}
-                              onClick={() => {
-                                console.log("Ver coincidencias de", item.id);
-                              }}
+                            <Typography variant="h6" sx={{ mb: 0 }}>
+                              {item.type}
+                            </Typography>
+                            <Box
                               sx={{
-                                height: "24px",
-                                textTransform: "none",
-                                fontSize: "0.8125rem",
-                                px: 1,
-                                borderRadius: "16px",
-                                bgcolor: "info.main",
-                                color: "white",
-                                "&:hover": {
-                                  bgcolor: "info.dark",
-                                },
+                                display: "flex",
+                                flexDirection: { xs: "column", sm: "row" },
+                                alignItems: { xs: "stretch", sm: "center" },
+                                gap: 1,
+                                width: { xs: "100%", sm: "auto" },
                               }}
                             >
-                              2 coincidencias
-                            </Button>
-                            <Button
-                              size="small"
-                              color="error"
-                              startIcon={<CloseIcon fontSize="small" />}
-                              onClick={() => {
-                                console.log("Desistir de", item.id);
-                              }}
-                              sx={{
-                                height: "24px",
-                                textTransform: "none",
-                                fontSize: "0.8125rem",
-                                px: 1,
-                                borderRadius: "16px",
-                                bgcolor: "error.main",
-                                color: "white",
-                                "&:hover": {
-                                  bgcolor: "error.dark",
-                                },
-                              }}
-                            >
-                              Desistir
-                            </Button>
-                            <Button
-                              size="small"
-                              color="success"
-                              startIcon={<CheckCircleIcon fontSize="small" />}
-                              onClick={() => {
-                                console.log("Encontrado", item.id);
-                              }}
-                              sx={{
-                                height: "24px",
-                                textTransform: "none",
-                                fontSize: "0.8125rem",
-                                px: 1,
-                                borderRadius: "16px",
-                                bgcolor: "success.main",
-                                color: "white",
-                                "&:hover": {
-                                  bgcolor: "success.dark",
-                                },
-                              }}
-                            >
-                              ¡Lo Encontre!
-                            </Button>
+                              <Button
+                                size="small"
+                                color="info"
+                                startIcon={<SearchIcon fontSize="small" />}
+                                onClick={() => {
+                                  console.log("Ver coincidencias de", item.id);
+                                }}
+                                sx={{
+                                  height: { xs: "32px", sm: "24px" },
+                                  textTransform: "none",
+                                  fontSize: "0.8125rem",
+                                  px: 1,
+                                  borderRadius: "16px",
+                                  bgcolor: "info.main",
+                                  color: "white",
+                                  "&:hover": {
+                                    bgcolor: "info.dark",
+                                  },
+                                }}
+                              >
+                                2 coincidencias
+                              </Button>
+                              <Button
+                                size="small"
+                                color="error"
+                                startIcon={<CloseIcon fontSize="small" />}
+                                onClick={() => {
+                                  console.log("Desistir de", item.id);
+                                }}
+                                sx={{
+                                  height: { xs: "32px", sm: "24px" },
+                                  textTransform: "none",
+                                  fontSize: "0.8125rem",
+                                  px: 1,
+                                  borderRadius: "16px",
+                                  bgcolor: "error.main",
+                                  color: "white",
+                                  "&:hover": {
+                                    bgcolor: "error.dark",
+                                  },
+                                }}
+                              >
+                                Desistir
+                              </Button>
+                              <Button
+                                size="small"
+                                color="success"
+                                startIcon={<CheckCircleIcon fontSize="small" />}
+                                onClick={() => {
+                                  console.log("Encontrado", item.id);
+                                }}
+                                sx={{
+                                  height: { xs: "32px", sm: "24px" },
+                                  textTransform: "none",
+                                  fontSize: "0.8125rem",
+                                  px: 1,
+                                  borderRadius: "16px",
+                                  bgcolor: "success.main",
+                                  color: "white",
+                                  "&:hover": {
+                                    bgcolor: "success.dark",
+                                  },
+                                }}
+                              >
+                                ¡Lo Encontre!
+                              </Button>
+                            </Box>
                           </Box>
-                        </Box>
 
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ mb: 1 }}
-                        >
-                          <strong>Fecha de pérdida:</strong>{" "}
-                          {dayjs(item.lostDate).format("DD/MM/YYYY")}
-                        </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mb: 1 }}
+                          >
+                            <strong>Fecha de pérdida:</strong>{" "}
+                            {dayjs(item.lostDate).format("DD/MM/YYYY")}
+                          </Typography>
 
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ mb: 1 }}
-                        >
-                          <strong>Posibles ubicaciones:</strong>
-                          <ul style={{ margin: "4px 0" }}>
-                            {item.locations.map((location, index) => (
-                              <li key={index}>{location}</li>
-                            ))}
-                          </ul>
-                        </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mb: 1 }}
+                          >
+                            <strong>Posibles ubicaciones:</strong>
+                            <ul style={{ margin: "4px 0" }}>
+                              {item.locations.map((location, index) => (
+                                <li key={index}>{location}</li>
+                              ))}
+                            </ul>
+                          </Typography>
 
-                        <Typography variant="body2">
-                          {item.description}
-                        </Typography>
-                      </CardContent>
+                          <Typography variant="body2">
+                            {item.description}
+                          </Typography>
+                        </CardContent>
+                      </Box>
                     </Box>
                   </Card>
                 </Grid>
