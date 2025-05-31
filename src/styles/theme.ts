@@ -149,88 +149,106 @@ const shadows = [
   'none', 'none', 'none', 'none', 'none',
   'none', 'none', 'none', 'none', 'none',
   'none', 'none', 'none', 'none', 'none'
-] as const;
+];
 
-// Enhanced theme
-export const theme = createTheme({
-  palette: {
-    primary: colors.primary,
-    secondary: colors.secondary,
-    info: colors.info,
-    success: colors.success,
-    error: colors.error,
-    warning: colors.warning,
-    grey: colors.grey,
-    background: {
-      default: '#f5f5f5',
-      paper: '#ffffff',
-    },
-  },
-  typography,
-  shadows,
-  shape: {
-    borderRadius: 8,
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          padding: '8px 24px',
-          textTransform: 'none',
-          fontWeight: 500,
-          '&:hover': {
-            transform: 'translateY(-1px)',
-            transition: 'transform 0.2s',
-          },
-        },
-        contained: {
-          boxShadow: shadows[1],
-          '&:hover': {
-            boxShadow: shadows[2],
-          },
-        },
-        outlined: {
-          borderWidth: 2,
-          '&:hover': {
-            borderWidth: 2,
-          },
-        },
+export const getTheme = (mode: 'light' | 'dark') => {
+  return createTheme(({
+    palette: {
+      mode,
+      primary: colors.primary,
+      secondary: colors.secondary,
+      info: {
+        main: colors.neutral.main,
+        light: colors.neutral.light,
+        dark: colors.neutral.dark,
       },
+      background: {
+        default: mode === 'light' ? '#f5f5f5' : '#121212',
+        paper: mode === 'light' ? '#ffffff' : '#1e1e1e',
+      },
+      text: {
+        primary: mode === 'light' ? 'rgba(0, 0, 0, 0.87)' : '#ffffff',
+        secondary: mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.7)',
+      },
+      success: colors.success,
+      error: colors.error,
+      warning: colors.warning,
+      grey: colors.grey,
     },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
+    typography: {
+      ...typography,
+    },
+    shadows: Array(25).fill('none').map((_, i) => shadows[i] || 'none'),
+    shape: {
+      borderRadius: 8,
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
             borderRadius: 8,
-            backgroundColor: '#ffffff',
-            '&.Mui-focused': {
-              boxShadow: '0 0 0 2px rgba(2, 105, 55, 0.2)',
+            padding: '8px 24px',
+            textTransform: 'none',
+            fontWeight: 500,
+            '&:hover': {
+              transform: 'translateY(-1px)',
+              transition: 'transform 0.2s',
+            },
+          },
+          contained: {
+            boxShadow: 'none',
+            '&:hover': {
+              boxShadow: '0px 2px 4px rgba(0,0,0,0.2)',
+            },
+          },
+          outlined: {
+            borderWidth: 2,
+            '&:hover': {
+              borderWidth: 2,
             },
           },
         },
       },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-          boxShadow: shadows[1],
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 8,
+              backgroundColor: mode === 'light' ? '#ffffff' : '#2e2e2e',
+              '&.Mui-focused': {
+                boxShadow: `0 0 0 2px ${colors.primary.main}40`,
+              },
+            },
+          },
+        },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            borderRadius: 12,
+            boxShadow: mode === 'light' 
+              ? '0px 2px 4px rgba(0,0,0,0.1)'
+              : '0px 2px 4px rgba(0,0,0,0.3)',
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            borderRadius: 12,
+          },
+          elevation1: {
+            boxShadow: mode === 'light'
+              ? '0px 2px 4px rgba(0,0,0,0.1)'
+              : '0px 2px 4px rgba(0,0,0,0.3)',
+          },
+          elevation2: {
+            boxShadow: mode === 'light'
+              ? '0px 4px 8px rgba(0,0,0,0.1)'
+              : '0px 4px 8px rgba(0,0,0,0.3)',
+          },
         },
       },
     },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-        },
-        elevation1: {
-          boxShadow: shadows[1],
-        },
-        elevation2: {
-          boxShadow: shadows[2],
-        },
-      },
-    },
-  },
-} as unknown as ThemeOptions);
+  } as unknown) as ThemeOptions);
+};

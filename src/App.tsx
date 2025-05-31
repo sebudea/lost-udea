@@ -2,44 +2,74 @@ import {
   Alert,
   Box,
   Container,
+  IconButton,
   Paper,
   Snackbar,
   Tab,
   Tabs,
   ThemeProvider,
   Typography,
+  useMediaQuery,
+  CssBaseline,
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
 import CategoryIcon from "@mui/icons-material/Category";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 
-import { theme } from "./styles/theme";
-import { useState } from "react";
+import { getTheme } from "./styles/theme";
+import { useState, useMemo } from "react";
 import { TabPanel } from "./components/TabPanel/TabPanel";
 import { FoundItemForm } from "./features/items/FoundItemForm";
 import { LostItemForm } from "./features/items/LostItemForm";
 
 function App() {
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const [mode, setMode] = useState<"light" | "dark">(
+    prefersDarkMode ? "dark" : "light"
+  );
   const [tabValue, setTabValue] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const theme = useMemo(() => getTheme(mode), [mode]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
+  const toggleColorMode = () => {
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+  };
+
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <IconButton
+        onClick={toggleColorMode}
+        color="inherit"
+        sx={{
+          position: "fixed",
+          right: 16,
+          top: 16,
+          bgcolor: "background.paper",
+          boxShadow: 1,
+          "&:hover": {
+            bgcolor: "background.paper",
+          },
+        }}
+      >
+        {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+      </IconButton>
       <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
-        <Container maxWidth="md">
+        <Container maxWidth="sm" sx={{ pt: 4, pb: 6 }}>
           <Box
             sx={{
-              py: 4,
               display: "flex",
               flexDirection: "column",
               gap: 4,
             }}
           >
-            {/* Header */}
             <Box
               sx={{
                 display: "flex",
@@ -67,7 +97,6 @@ function App() {
               </Typography>
             </Box>
 
-            {/* Main Content */}
             <Paper elevation={2} sx={{ borderRadius: 3, overflow: "hidden" }}>
               <Tabs
                 value={tabValue}
