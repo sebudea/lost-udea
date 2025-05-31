@@ -8,6 +8,7 @@ export function ImageUpload({
   onImageChange,
   onPreviewChange,
   error,
+  optional = false,
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -45,6 +46,12 @@ export function ImageUpload({
         ref={fileInputRef}
         onChange={handleImageChange}
       />
+
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        {optional
+          ? "¿Tienes una foto del objeto? (Opcional)"
+          : "Sube una foto del objeto"}
+      </Typography>
 
       <Box
         sx={{

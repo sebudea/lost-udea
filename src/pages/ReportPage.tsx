@@ -1,6 +1,8 @@
-import { Container, Typography, Paper } from "@mui/material";
+import { Container, Typography, Paper, IconButton } from "@mui/material";
 import { AuthLayout } from "../components/Layout/AuthLayout";
 import { ReportLostItemForm } from "../features/items/ReportLostItemForm";
+import HomeIcon from "@mui/icons-material/Home";
+import { useNavigate } from "react-router-dom";
 
 interface ReportPageProps {
   isDarkMode: boolean;
@@ -8,8 +10,27 @@ interface ReportPageProps {
 }
 
 export function ReportPage({ isDarkMode, onToggleTheme }: ReportPageProps) {
+  const navigate = useNavigate();
+
   return (
     <AuthLayout isDarkMode={isDarkMode} onToggleTheme={onToggleTheme}>
+      <IconButton
+        onClick={() => navigate("/home")}
+        color="inherit"
+        sx={{
+          position: "fixed",
+          left: "50%",
+          bottom: 16,
+          transform: "translateX(-50%)",
+          bgcolor: "background.paper",
+          boxShadow: 1,
+          "&:hover": {
+            bgcolor: "background.paper",
+          },
+        }}
+      >
+        <HomeIcon />
+      </IconButton>
       <Container maxWidth="md" sx={{ pb: 6 }}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
           Reportar Objeto Perdido

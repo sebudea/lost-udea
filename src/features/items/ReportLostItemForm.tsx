@@ -8,6 +8,14 @@ import {
   Select,
   TextField,
   InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -20,6 +28,9 @@ import { LOCATIONS, Location } from "../../constants/locations";
 import { ITEM_TYPES, ItemType } from "../../constants/itemTypes";
 import { useState } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
+import { ImageUpload } from "../../components/ImageUpload/ImageUpload";
+import { useNavigate } from "react-router-dom";
+import type { FoundItem } from "./types";
 
 // Configuramos el locale español
 dayjs.locale("es");
@@ -29,7 +40,7 @@ interface ReportLostItemFormValues {
   locations: Location[];
   lostDate: Date;
   description: string;
-  imageUrl?: string;
+  image?: File | null;
 }
 
 const validationSchema = yup.object({
@@ -46,142 +57,279 @@ const validationSchema = yup.object({
     .required("Por favor describe el objeto")
     .min(10, "La descripción debe tener al menos 10 caracteres")
     .max(500, "La descripción no puede exceder los 500 caracteres"),
+  image: yup.mixed().nullable(),
 });
 
 export function ReportLostItemForm() {
   const [open, setOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmations, setConfirmations] = useState({
+    truthful: false,
+    ownership: false,
+    consequences: false,
+  });
+  const navigate = useNavigate();
+
+  const allConfirmed = Object.values(confirmations).every(Boolean);
+
+  const handleConfirmationChange = (key: keyof typeof confirmations) => {
+    setConfirmations((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
   const formik = useFormik<ReportLostItemFormValues>({
     initialValues: {
       type: "",
       locations: [],
       lostDate: new Date(),
       description: "",
+      image: null,
     },
     validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
-      // Aquí irá la lógica para guardar el objeto perdido
+    onSubmit: async (values) => {
+      // Mostrar diálogo de confirmación en lugar de enviar directamente
+      setShowConfirmDialog(true);
     },
   });
 
+  const handleConfirm = async () => {
+    setShowConfirmDialog(false);
+    // Simulación de búsqueda de coincidencias (esto se reemplazará con la lógica real)
+    const mockMatches: FoundItem[] = [];
+
+    // Navegar a la página de resultados
+    navigate("/search-results", {
+      state: {
+        matches: mockMatches,
+        lostItem: {
+          ...formik.values,
+          id: Date.now().toString(),
+          status: "searching" as const,
+          seekerId: "user123",
+        },
+      },
+    });
+  };
+
   return (
-    <Box component="form" onSubmit={formik.handleSubmit} sx={{ width: "100%" }}>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        <FormControl
-          fullWidth
-          error={formik.touched.type && Boolean(formik.errors.type)}
-        >
-          <InputLabel>Tipo de Objeto</InputLabel>
-          <Select
-            name="type"
-            value={formik.values.type}
-            onChange={formik.handleChange}
-            label="Tipo de Objeto"
+    <>
+      <Box
+        component="form"
+        onSubmit={formik.handleSubmit}
+        sx={{ width: "100%" }}
+      >
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          <FormControl
+            fullWidth
+            error={formik.touched.type && Boolean(formik.errors.type)}
           >
-            {ITEM_TYPES.map((type: ItemType) => (
-              <MenuItem key={type.value} value={type.value}>
-                {type.label}
-              </MenuItem>
-            ))}
-          </Select>
-          {formik.touched.type && formik.errors.type && (
-            <FormHelperText>{formik.errors.type}</FormHelperText>
-          )}
-        </FormControl>
+            <InputLabel>Tipo de Objeto</InputLabel>
+            <Select
+              name="type"
+              value={formik.values.type}
+              onChange={formik.handleChange}
+              label="Tipo de Objeto"
+            >
+              {ITEM_TYPES.map((type: ItemType) => (
+                <MenuItem key={type.value} value={type.value}>
+                  {type.label}
+                </MenuItem>
+              ))}
+            </Select>
+            {formik.touched.type && formik.errors.type && (
+              <FormHelperText>{formik.errors.type}</FormHelperText>
+            )}
+          </FormControl>
 
-        <FormControl
-          fullWidth
-          error={formik.touched.locations && Boolean(formik.errors.locations)}
-        >
-          <InputLabel>Posibles Ubicaciones (máx. 2)</InputLabel>
-          <Select
-            multiple
-            open={open}
-            onOpen={() => setOpen(true)}
-            onClose={() => setOpen(false)}
-            name="locations"
-            value={formik.values.locations}
-            onChange={(event: SelectChangeEvent<Location[]>) => {
-              const newValue = event.target.value as Location[];
-              formik.setFieldValue("locations", newValue);
-              if (newValue.length >= 2) {
-                setOpen(false);
-              }
-            }}
-            label="Posibles Ubicaciones (máx. 2)"
+          <FormControl
+            fullWidth
+            error={formik.touched.locations && Boolean(formik.errors.locations)}
           >
-            {LOCATIONS.map((location: Location) => (
-              <MenuItem
-                key={location}
-                value={location}
-                disabled={
-                  formik.values.locations.length >= 2 &&
-                  !formik.values.locations.includes(location)
+            <InputLabel>Posibles Ubicaciones (máx. 2)</InputLabel>
+            <Select
+              multiple
+              open={open}
+              onOpen={() => setOpen(true)}
+              onClose={() => setOpen(false)}
+              name="locations"
+              value={formik.values.locations}
+              onChange={(event: SelectChangeEvent<Location[]>) => {
+                const newValue = event.target.value as Location[];
+                formik.setFieldValue("locations", newValue);
+                if (newValue.length >= 2) {
+                  setOpen(false);
                 }
-              >
-                {location}
-              </MenuItem>
-            ))}
-          </Select>
-          {formik.touched.locations && formik.errors.locations && (
-            <FormHelperText>{formik.errors.locations}</FormHelperText>
-          )}
-        </FormControl>
+              }}
+              label="Posibles Ubicaciones (máx. 2)"
+            >
+              {LOCATIONS.map((location: Location) => (
+                <MenuItem
+                  key={location}
+                  value={location}
+                  disabled={
+                    formik.values.locations.length >= 2 &&
+                    !formik.values.locations.includes(location)
+                  }
+                >
+                  {location}
+                </MenuItem>
+              ))}
+            </Select>
+            {formik.touched.locations && formik.errors.locations && (
+              <FormHelperText>{formik.errors.locations}</FormHelperText>
+            )}
+          </FormControl>
 
-        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-          <MobileDatePicker
-            label="¿Cuándo lo perdiste?"
-            value={dayjs(formik.values.lostDate)}
-            onChange={(newValue) => {
-              if (newValue) {
-                formik.setFieldValue("lostDate", newValue.toDate());
-              }
-            }}
-            maxDate={dayjs().endOf("day")}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                error:
-                  formik.touched.lostDate && Boolean(formik.errors.lostDate),
-                helperText:
-                  formik.touched.lostDate && (formik.errors.lostDate as string),
-                InputProps: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <CalendarTodayIcon />
-                    </InputAdornment>
-                  ),
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+            <MobileDatePicker
+              label="¿Cuándo lo perdiste?"
+              value={dayjs(formik.values.lostDate)}
+              onChange={(newValue) => {
+                if (newValue) {
+                  formik.setFieldValue("lostDate", newValue.toDate());
+                }
+              }}
+              maxDate={dayjs().endOf("day")}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  error:
+                    formik.touched.lostDate && Boolean(formik.errors.lostDate),
+                  helperText:
+                    formik.touched.lostDate &&
+                    (formik.errors.lostDate as string),
+                  InputProps: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <CalendarTodayIcon />
+                      </InputAdornment>
+                    ),
+                  },
                 },
-              },
-            }}
+              }}
+            />
+          </LocalizationProvider>
+
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            name="description"
+            label="Descripción del objeto"
+            placeholder="Describe el objeto con el mayor detalle posible (color, marca, características distintivas, etc.)"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.description && Boolean(formik.errors.description)
+            }
+            helperText={formik.touched.description && formik.errors.description}
           />
-        </LocalizationProvider>
 
-        <TextField
-          fullWidth
-          multiline
-          rows={4}
-          name="description"
-          label="Descripción del objeto"
-          placeholder="Describe el objeto con el mayor detalle posible (color, marca, características distintivas, etc.)"
-          value={formik.values.description}
-          onChange={formik.handleChange}
-          error={
-            formik.touched.description && Boolean(formik.errors.description)
-          }
-          helperText={formik.touched.description && formik.errors.description}
-        />
+          <ImageUpload
+            onImageChange={(file) => formik.setFieldValue("image", file)}
+            onPreviewChange={setPreviewUrl}
+            error={
+              formik.touched.image ? (formik.errors.image as string) : undefined
+            }
+            optional
+          />
 
-        <Button
-          type="submit"
-          variant="contained"
-          size="large"
-          fullWidth
-          sx={{ mt: 2 }}
-        >
-          Enviar Reporte
-        </Button>
+          {previewUrl && (
+            <Box sx={{ mt: 2, mb: 3, textAlign: "center" }}>
+              <img
+                src={previewUrl}
+                alt="Vista previa"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "200px",
+                  borderRadius: "8px",
+                  margin: "0 auto",
+                }}
+              />
+            </Box>
+          )}
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            Enviar Reporte
+          </Button>
+        </Box>
       </Box>
-    </Box>
+
+      <Dialog
+        open={showConfirmDialog}
+        onClose={() => setShowConfirmDialog(false)}
+        aria-labelledby="confirm-dialog-title"
+      >
+        <DialogTitle id="confirm-dialog-title">
+          Confirmación de Reporte
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Antes de enviar tu reporte, necesitamos que confirmes algunos puntos
+            importantes:
+          </DialogContentText>
+          <FormGroup sx={{ mt: 2 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={confirmations.truthful}
+                  onChange={() => handleConfirmationChange("truthful")}
+                />
+              }
+              label="Confirmo que la información proporcionada es verdadera y precisa"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={confirmations.ownership}
+                  onChange={() => handleConfirmationChange("ownership")}
+                />
+              }
+              label="Confirmo que soy el legítimo dueño o representante autorizado del objeto perdido"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={confirmations.consequences}
+                  onChange={() => handleConfirmationChange("consequences")}
+                />
+              }
+              label="Entiendo que hacer un reporte falso puede tener consecuencias legales y disciplinarias según el reglamento universitario"
+            />
+          </FormGroup>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setShowConfirmDialog(false);
+              setConfirmations({
+                truthful: false,
+                ownership: false,
+                consequences: false,
+              });
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleConfirm}
+            variant="contained"
+            disabled={!allConfirmed}
+            autoFocus
+          >
+            Confirmar y Enviar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }

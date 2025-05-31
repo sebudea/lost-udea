@@ -37,6 +37,10 @@ export function Header({ isDarkMode, onToggleTheme }: HeaderProps) {
           color="primary"
           sx={{
             fontWeight: 700,
+            bgcolor: "background.default",
+            px: 3,
+            py: 1,
+            borderRadius: 2,
           }}
         >
           Lost UdeA
