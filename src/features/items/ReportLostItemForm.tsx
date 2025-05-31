@@ -18,6 +18,8 @@ import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { LOCATIONS, Location } from "../../constants/locations";
 import { ITEM_TYPES, ItemType } from "../../constants/itemTypes";
+import { useState } from "react";
+import { SelectChangeEvent } from "@mui/material/Select";
 
 // Configuramos el locale español
 dayjs.locale("es");
@@ -47,6 +49,7 @@ const validationSchema = yup.object({
 });
 
 export function ReportLostItemForm() {
+  const [open, setOpen] = useState(false);
   const formik = useFormik<ReportLostItemFormValues>({
     initialValues: {
       type: "",
@@ -93,9 +96,18 @@ export function ReportLostItemForm() {
           <InputLabel>Posibles Ubicaciones (máx. 2)</InputLabel>
           <Select
             multiple
+            open={open}
+            onOpen={() => setOpen(true)}
+            onClose={() => setOpen(false)}
             name="locations"
             value={formik.values.locations}
-            onChange={formik.handleChange}
+            onChange={(event: SelectChangeEvent<Location[]>) => {
+              const newValue = event.target.value as Location[];
+              formik.setFieldValue("locations", newValue);
+              if (newValue.length >= 2) {
+                setOpen(false);
+              }
+            }}
             label="Posibles Ubicaciones (máx. 2)"
           >
             {LOCATIONS.map((location: Location) => (
