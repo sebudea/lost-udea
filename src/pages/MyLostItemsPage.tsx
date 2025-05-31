@@ -212,7 +212,7 @@ export function MyLostItemsPage({
                                 },
                               }}
                             >
-                              Encontrado
+                              ¡Lo Encontre!
                             </Button>
                           </Box>
                         </Box>

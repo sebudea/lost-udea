@@ -2,7 +2,7 @@ import { Container, Typography, Paper, Box, Button } from "@mui/material";
 import { AuthLayout } from "../components/Layout/AuthLayout";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+import CategoryIcon from "@mui/icons-material/Category";
 
 interface HomePageProps {
   isDarkMode: boolean;
@@ -60,7 +60,7 @@ export function HomePage({ isDarkMode, onToggleTheme }: HomePageProps) {
             <Button
               variant="contained"
               size="large"
-              startIcon={<AddCircleIcon />}
+              startIcon={<CategoryIcon />}
               onClick={() => navigate("/report")}
             >
               Reportar Objeto
