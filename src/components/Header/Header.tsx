@@ -1,6 +1,8 @@
 import { Box, Container, IconButton, Typography } from "@mui/material";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -8,6 +10,8 @@ interface HeaderProps {
 }
 
 export function Header({ isDarkMode, onToggleTheme }: HeaderProps) {
+  const navigate = useNavigate();
+
   return (
     <Box
       component="header"
@@ -38,6 +42,22 @@ export function Header({ isDarkMode, onToggleTheme }: HeaderProps) {
           Lost UdeA
         </Typography>
       </Container>
+      <IconButton
+        onClick={() => navigate("/profile")}
+        color="inherit"
+        sx={{
+          position: "fixed",
+          left: 16,
+          top: 16,
+          bgcolor: "background.paper",
+          boxShadow: 1,
+          "&:hover": {
+            bgcolor: "background.paper",
+          },
+        }}
+      >
+        <AccountCircleIcon />
+      </IconButton>
       <IconButton
         onClick={onToggleTheme}
         color="inherit"

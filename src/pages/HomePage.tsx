@@ -14,7 +14,8 @@ export function HomePage({ isDarkMode, onToggleTheme }: HomePageProps) {
         sx={{
           height: "100%",
           display: "flex",
-          alignItems: "flex-start",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Box
@@ -23,7 +24,6 @@ export function HomePage({ isDarkMode, onToggleTheme }: HomePageProps) {
             flexDirection: "column",
             gap: 4,
             width: "100%",
-            py: 2,
           }}
         >
           <Typography variant="h4" component="h1" gutterBottom>
