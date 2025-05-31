@@ -6,6 +6,7 @@ import { RegisterPage } from "./pages/RegisterPage";
 import { HomePage } from "./pages/HomePage";
 import { LandingPage } from "./pages/LandingPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { ReportPage } from "./pages/ReportPage";
 
 function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -43,6 +44,7 @@ function App() {
             />
             <Route path="/home" element={<HomePage {...themeProps} />} />
             <Route path="/profile" element={<ProfilePage {...themeProps} />} />
+            <Route path="/report" element={<ReportPage {...themeProps} />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

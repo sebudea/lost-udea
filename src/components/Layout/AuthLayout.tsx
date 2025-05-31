@@ -14,14 +14,14 @@ export function AuthLayout({
   onToggleTheme,
 }: AuthLayoutProps) {
   return (
-    <Box sx={{ height: "100vh", overflow: "hidden" }}>
+    <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header isDarkMode={isDarkMode} onToggleTheme={onToggleTheme} />
       <Box
         component="main"
         sx={{
-          height: "calc(100vh - 64px)", // Subtract header height
+          flex: 1,
           pt: 8,
-          overflow: "hidden",
+          overflow: "auto",
         }}
       >
         {children}
