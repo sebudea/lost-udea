@@ -88,7 +88,7 @@ export function HomePage({ isDarkMode, onToggleTheme }: HomePageProps) {
               variant="outlined"
               size="large"
               startIcon={<SearchIcon />}
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate("/my-lost-items")}
             >
               Ver Mis Objetos
             </Button>

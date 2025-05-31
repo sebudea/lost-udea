@@ -8,6 +8,7 @@ import { LandingPage } from "./pages/LandingPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ReportPage } from "./pages/ReportPage";
 import { SearchResultsPage } from "./pages/SearchResultsPage";
+import { MyLostItemsPage } from "./pages/MyLostItemsPage";
 
 function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -49,6 +50,10 @@ function App() {
             <Route
               path="/search-results"
               element={<SearchResultsPage {...themeProps} />}
+            />
+            <Route
+              path="/my-lost-items"
+              element={<MyLostItemsPage {...themeProps} />}
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
