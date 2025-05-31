@@ -7,20 +7,25 @@ import {
   MenuItem,
   Select,
   TextField,
+  InputAdornment,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import es from "date-fns/locale/es";
+import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
 import { LOCATIONS, Location } from "../../constants/locations";
 import { ITEM_TYPES, ItemType } from "../../constants/itemTypes";
+
+// Configuramos el locale español
+dayjs.locale("es");
 
 interface ReportLostItemFormValues {
   type: string;
   locations: Location[];
-  lostDate: Date | null;
+  lostDate: Date;
   description: string;
   imageUrl?: string;
 }
@@ -46,7 +51,7 @@ export function ReportLostItemForm() {
     initialValues: {
       type: "",
       locations: [],
-      lostDate: null,
+      lostDate: new Date(),
       description: "",
     },
     validationSchema,
@@ -111,18 +116,30 @@ export function ReportLostItemForm() {
           )}
         </FormControl>
 
-        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
-          <DatePicker
-            label="Fecha en que se perdió"
-            value={formik.values.lostDate}
-            onChange={(date) => formik.setFieldValue("lostDate", date)}
-            maxDate={new Date()}
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+          <MobileDatePicker
+            label="¿Cuándo lo perdiste?"
+            value={dayjs(formik.values.lostDate)}
+            onChange={(newValue) => {
+              if (newValue) {
+                formik.setFieldValue("lostDate", newValue.toDate());
+              }
+            }}
+            maxDate={dayjs().endOf("day")}
             slotProps={{
               textField: {
                 fullWidth: true,
                 error:
                   formik.touched.lostDate && Boolean(formik.errors.lostDate),
-                helperText: formik.touched.lostDate && formik.errors.lostDate,
+                helperText:
+                  formik.touched.lostDate && (formik.errors.lostDate as string),
+                InputProps: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <CalendarTodayIcon />
+                    </InputAdornment>
+                  ),
+                },
               },
             }}
           />
