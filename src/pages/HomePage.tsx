@@ -1,5 +1,8 @@
-import { Container, Typography, Paper, Box } from "@mui/material";
+import { Container, Typography, Paper, Box, Button } from "@mui/material";
 import { AuthLayout } from "../components/Layout/AuthLayout";
+import { useNavigate } from "react-router-dom";
+import SearchIcon from "@mui/icons-material/Search";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 interface HomePageProps {
   isDarkMode: boolean;
@@ -7,6 +10,8 @@ interface HomePageProps {
 }
 
 export function HomePage({ isDarkMode, onToggleTheme }: HomePageProps) {
+  const navigate = useNavigate();
+
   return (
     <AuthLayout isDarkMode={isDarkMode} onToggleTheme={onToggleTheme}>
       <Container
@@ -26,27 +31,67 @@ export function HomePage({ isDarkMode, onToggleTheme }: HomePageProps) {
             width: "100%",
           }}
         >
-          <Typography variant="h4" component="h1" gutterBottom>
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            align="center"
+            sx={{ fontWeight: 700 }}
+          >
             Bienvenido a Lost UdeA
           </Typography>
 
-          <Paper elevation={2} sx={{ p: 4, borderRadius: 3 }}>
+          <Paper
+            elevation={2}
+            sx={{
+              p: 4,
+              borderRadius: 3,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
             <Typography variant="h6" gutterBottom>
-              Objetos Reportados
+              Reportar Objeto Perdido
             </Typography>
-            <Typography color="text.secondary">
-              Aquí aparecerán los objetos que has reportado como perdidos o
-              encontrados.
+            <Typography color="text.secondary" paragraph>
+              ¿Perdiste algo? Repórtalo aquí y te ayudaremos a encontrarlo.
             </Typography>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={<AddCircleIcon />}
+              onClick={() => navigate("/report")}
+            >
+              Reportar Objeto
+            </Button>
           </Paper>
 
-          <Paper elevation={2} sx={{ p: 4, borderRadius: 3 }}>
+          <Paper
+            elevation={2}
+            sx={{
+              p: 4,
+              borderRadius: 3,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
             <Typography variant="h6" gutterBottom>
-              Coincidencias
+              Mis Objetos Perdidos
             </Typography>
-            <Typography color="text.secondary">
-              Aquí aparecerán las posibles coincidencias con objetos reportados.
+            <Typography color="text.secondary" paragraph>
+              Aquí podrás ver el estado de tus objetos perdidos y sus posibles
+              coincidencias.
             </Typography>
+            <Button
+              variant="outlined"
+              size="large"
+              startIcon={<SearchIcon />}
+              onClick={() => navigate("/profile")}
+            >
+              Ver Mis Objetos
+            </Button>
           </Paper>
         </Box>
       </Container>
