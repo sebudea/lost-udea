@@ -9,6 +9,10 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { ReportPage } from "./pages/ReportPage";
 import { SearchResultsPage } from "./pages/SearchResultsPage";
 import { MyLostItemsPage } from "./pages/MyLostItemsPage";
+import { MatchesPage } from "./pages/MatchesPage";
+import { FoundLocationPage } from "./pages/FoundLocationPage";
+import { FoundMatchesPage } from "./pages/FoundMatchesPage";
+import { ThankYouPage } from "./pages/ThankYouPage";
 
 function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -54,6 +58,22 @@ function App() {
             <Route
               path="/my-lost-items"
               element={<MyLostItemsPage {...themeProps} />}
+            />
+            <Route
+              path="/matches/:itemId"
+              element={<MatchesPage {...themeProps} />}
+            />
+            <Route
+              path="/found-location/:itemId"
+              element={<FoundLocationPage {...themeProps} />}
+            />
+            <Route
+              path="/found-matches/:itemId"
+              element={<FoundMatchesPage {...themeProps} />}
+            />
+            <Route
+              path="/thank-you/:itemId"
+              element={<ThankYouPage {...themeProps} />}
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

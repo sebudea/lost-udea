@@ -9,6 +9,10 @@ import {
   Button,
   IconButton,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { AuthLayout } from "../components/Layout/AuthLayout";
 import HomeIcon from "@mui/icons-material/Home";
@@ -18,6 +22,7 @@ import dayjs from "dayjs";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import SearchIcon from "@mui/icons-material/Search";
+import { useState } from "react";
 
 interface MyLostItemsPageProps {
   isDarkMode: boolean;
@@ -29,6 +34,8 @@ export function MyLostItemsPage({
   onToggleTheme,
 }: MyLostItemsPageProps) {
   const navigate = useNavigate();
+  const [itemToDelete, setItemToDelete] = useState<LostItem | null>(null);
+  const [itemFound, setItemFound] = useState<LostItem | null>(null);
 
   // Simulación de datos (esto se reemplazará con datos reales de Firebase)
   const mockLostItems: LostItem[] = [
@@ -69,6 +76,37 @@ export function MyLostItemsPage({
         "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?ixlib=rb-4.0.3",
     },
   ];
+
+  const handleDesist = (item: LostItem) => {
+    setItemToDelete(item);
+  };
+
+  const handleConfirmDesist = () => {
+    if (itemToDelete) {
+      // Aquí irá la lógica para eliminar el objeto de la base de datos
+      console.log("Eliminando objeto", itemToDelete.id);
+      setItemToDelete(null);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setItemToDelete(null);
+  };
+
+  const handleFound = (item: LostItem) => {
+    setItemFound(item);
+  };
+
+  const handleConfirmFound = () => {
+    if (itemFound) {
+      navigate(`/found-location/${itemFound.id}`);
+      setItemFound(null);
+    }
+  };
+
+  const handleCloseFoundDialog = () => {
+    setItemFound(null);
+  };
 
   return (
     <AuthLayout isDarkMode={isDarkMode} onToggleTheme={onToggleTheme}>
@@ -172,7 +210,7 @@ export function MyLostItemsPage({
                                 color="info"
                                 startIcon={<SearchIcon fontSize="small" />}
                                 onClick={() => {
-                                  console.log("Ver coincidencias de", item.id);
+                                  navigate(`/matches/${item.id}`);
                                 }}
                                 sx={{
                                   height: { xs: "32px", sm: "24px" },
@@ -193,9 +231,7 @@ export function MyLostItemsPage({
                                 size="small"
                                 color="error"
                                 startIcon={<CloseIcon fontSize="small" />}
-                                onClick={() => {
-                                  console.log("Desistir de", item.id);
-                                }}
+                                onClick={() => handleDesist(item)}
                                 sx={{
                                   height: { xs: "32px", sm: "24px" },
                                   textTransform: "none",
@@ -215,9 +251,7 @@ export function MyLostItemsPage({
                                 size="small"
                                 color="success"
                                 startIcon={<CheckCircleIcon fontSize="small" />}
-                                onClick={() => {
-                                  console.log("Encontrado", item.id);
-                                }}
+                                onClick={() => handleFound(item)}
                                 sx={{
                                   height: { xs: "32px", sm: "24px" },
                                   textTransform: "none",
@@ -231,7 +265,7 @@ export function MyLostItemsPage({
                                   },
                                 }}
                               >
-                                ¡Lo Encontre!
+                                ¡Lo Encontré!
                               </Button>
                             </Box>
                           </Box>
@@ -304,6 +338,86 @@ export function MyLostItemsPage({
       >
         <HomeIcon />
       </IconButton>
+
+      <Dialog
+        open={itemToDelete !== null}
+        onClose={handleCloseDialog}
+        aria-labelledby="desist-dialog-title"
+      >
+        <DialogTitle id="desist-dialog-title">
+          ¿Deseas desistir de este objeto?
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            Esta acción eliminará el objeto de tu lista de objetos perdidos y no
+            podrás recibir más coincidencias para él.
+          </Typography>
+          {itemToDelete && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Objeto: {itemToDelete.type}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Fecha de pérdida:{" "}
+                {dayjs(itemToDelete.lostDate).format("DD/MM/YYYY")}
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="inherit">
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleConfirmDesist}
+            color="error"
+            variant="contained"
+            startIcon={<CloseIcon />}
+          >
+            Sí, Desistir
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={itemFound !== null}
+        onClose={handleCloseFoundDialog}
+        aria-labelledby="found-dialog-title"
+      >
+        <DialogTitle id="found-dialog-title">
+          ¿Has encontrado tu objeto?
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            ¡Nos alegra que hayas encontrado tu objeto! A continuación te
+            haremos algunas preguntas para mejorar nuestro servicio.
+          </Typography>
+          {itemFound && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Objeto: {itemFound.type}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Fecha de pérdida:{" "}
+                {dayjs(itemFound.lostDate).format("DD/MM/YYYY")}
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseFoundDialog} color="inherit">
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleConfirmFound}
+            color="success"
+            variant="contained"
+            startIcon={<CheckCircleIcon />}
+          >
+            Sí, lo encontré
+          </Button>
+        </DialogActions>
+      </Dialog>
     </AuthLayout>
   );
 }
