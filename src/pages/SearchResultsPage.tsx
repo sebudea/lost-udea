@@ -125,7 +125,7 @@ export function SearchResultsPage({
               </Box>
               <Button
                 variant="contained"
-                onClick={() => navigate("/profile")}
+                onClick={() => navigate("/my-lost-items")}
                 sx={{ mt: 2 }}
               >
                 Ver mis reportes

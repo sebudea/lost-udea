@@ -85,6 +85,7 @@ export function FoundMatchesPage({
           display: "flex",
           alignItems: "flex-start",
           pt: { xs: 2, sm: 4 },
+          pb: { xs: 10, sm: 12 },
         }}
       >
         <Container
@@ -195,24 +196,41 @@ export function FoundMatchesPage({
               </Grid>
             </RadioGroup>
           </FormControl>
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              mt: 4,
-            }}
-          >
-            <Button
-              variant="contained"
-              size="large"
-              disabled={!selectedMatch}
-              onClick={handleConfirmMatch}
-            >
-              Confirmar Selección
-            </Button>
-          </Box>
         </Container>
+      </Box>
+
+      <Box
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          py: 2,
+          px: 2,
+          bgcolor: "background.paper",
+          borderTop: 1,
+          borderColor: "divider",
+          display: "flex",
+          justifyContent: "center",
+          zIndex: 1000,
+          boxShadow: "0px -2px 8px rgba(0,0,0,0.1)",
+        }}
+      >
+        <Button
+          variant="contained"
+          size="large"
+          disabled={!selectedMatch}
+          onClick={handleConfirmMatch}
+          sx={{
+            minWidth: { xs: "100%", sm: "300px" },
+            height: "48px",
+            fontSize: "1.1rem",
+            fontWeight: "bold",
+            boxShadow: (theme) => `0 4px 12px ${theme.palette.primary.main}40`,
+          }}
+        >
+          {selectedMatch ? "Confirmar Selección" : "Selecciona un objeto"}
+        </Button>
       </Box>
 
       <IconButton
