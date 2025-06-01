@@ -2,6 +2,7 @@ import { Box, Container, IconButton, Typography } from "@mui/material";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
@@ -11,6 +12,12 @@ interface HeaderProps {
 
 export function Header({ isDarkMode, onToggleTheme }: HeaderProps) {
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Aquí irá la lógica de logout con Firebase
+    console.log("Cerrando sesión...");
+    navigate("/");
+  };
 
   return (
     <Box
@@ -62,22 +69,42 @@ export function Header({ isDarkMode, onToggleTheme }: HeaderProps) {
       >
         <AccountCircleIcon />
       </IconButton>
-      <IconButton
-        onClick={onToggleTheme}
-        color="inherit"
+      <Box
         sx={{
           position: "fixed",
           right: 16,
           top: 16,
-          bgcolor: "background.paper",
-          boxShadow: 1,
-          "&:hover": {
-            bgcolor: "background.paper",
-          },
+          display: "flex",
+          gap: 1,
         }}
       >
-        {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-      </IconButton>
+        <IconButton
+          onClick={handleLogout}
+          color="inherit"
+          sx={{
+            bgcolor: "background.paper",
+            boxShadow: 1,
+            "&:hover": {
+              bgcolor: "background.paper",
+            },
+          }}
+        >
+          <LogoutIcon />
+        </IconButton>
+        <IconButton
+          onClick={onToggleTheme}
+          color="inherit"
+          sx={{
+            bgcolor: "background.paper",
+            boxShadow: 1,
+            "&:hover": {
+              bgcolor: "background.paper",
+            },
+          }}
+        >
+          {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+        </IconButton>
+      </Box>
     </Box>
   );
 }

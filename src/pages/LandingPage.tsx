@@ -8,6 +8,7 @@ import {
   Tab,
   Tabs,
   Typography,
+  AlertTitle,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CategoryIcon from "@mui/icons-material/Category";
@@ -23,12 +24,39 @@ interface LandingPageProps {
   onToggleTheme: () => void;
 }
 
+interface SuccessInfo {
+  show: boolean;
+  location?: string;
+}
+
 export function LandingPage({ isDarkMode, onToggleTheme }: LandingPageProps) {
   const [tabValue, setTabValue] = useState(0);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [successInfo, setSuccessInfo] = useState<SuccessInfo>({ show: false });
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+  };
+
+  const handleFoundItemSuccess = (location: string) => {
+    setSuccessInfo({ show: true, location });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSuccessInfo({ show: false });
+  };
+
+  const getDeliveryLocation = (location: string) => {
+    // Mapa de ubicaciones y sus puntos de entrega
+    const deliveryPoints: { [key: string]: string } = {
+      "Bloque 21 - Fac. de Ingeniería":
+        "la secretaría de la Facultad de Ingeniería (Bloque 21, primer piso)",
+      "Biblioteca Central": "el mostrador principal de la Biblioteca Central",
+      // Agregar más ubicaciones según sea necesario
+    };
+
+    return (
+      deliveryPoints[location] || "la oficina de objetos perdidos más cercana"
+    );
   };
 
   return (
@@ -122,7 +150,7 @@ export function LandingPage({ isDarkMode, onToggleTheme }: LandingPageProps) {
             </Tabs>
 
             <TabPanel value={tabValue} index={0}>
-              <FoundItemForm />
+              <FoundItemForm onSuccess={handleFoundItemSuccess} />
             </TabPanel>
 
             <TabPanel value={tabValue} index={1}>
@@ -133,18 +161,21 @@ export function LandingPage({ isDarkMode, onToggleTheme }: LandingPageProps) {
       </Container>
 
       <Snackbar
-        open={showSuccess}
-        autoHideDuration={6000}
-        onClose={() => setShowSuccess(false)}
+        open={successInfo.show}
+        autoHideDuration={10000}
+        onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
-          onClose={() => setShowSuccess(false)}
+          onClose={handleCloseSnackbar}
           severity="success"
           variant="filled"
+          sx={{ width: "100%" }}
         >
-          ¡Gracias por reportar el objeto! Tu reporte ha sido registrado
-          exitosamente.
+          <AlertTitle>¡Gracias por reportar el objeto!</AlertTitle>
+          Por favor, entrega el objeto en{" "}
+          {getDeliveryLocation(successInfo.location || "")}. Tu ayuda es muy
+          valiosa para la comunidad universitaria.
         </Alert>
       </Snackbar>
     </>
