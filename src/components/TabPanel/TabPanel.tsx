@@ -1,18 +1,28 @@
 import { Box } from "@mui/material";
 import type { TabPanelProps } from "./types";
 
-export function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
+export const TabPanel = ({
+  children,
+  value,
+  index,
+  ...other
+}: TabPanelProps) => {
   return (
-    <div
+    <Box
       role="tabpanel"
       hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+      component="div"
+      sx={{
+        p: 3,
+        width: "100%",
+        height: "100%",
+        overflow: "auto",
+      }}
       {...other}
     >
-      {value === index && <Box sx={{ p: 4 }}>{children}</Box>}
-    </div>
+      {value === index && <Box sx={{ height: "100%" }}>{children}</Box>}
+    </Box>
   );
-}
+};
