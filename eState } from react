@@ -1,0 +1,137 @@
+[33mcommit 5acd93b4f8902d7ec5a70e55665a49a73902f289[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Tue Jun 10 17:47:50 2025 -0500
+
+    la cague retroceder ahha
+
+[33mcommit aeb72ed7d31989ce2fa8a89da97177fc5891918c[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Mon Jun 2 19:33:55 2025 -0500
+
+    agregando las rules de cursor
+
+[33mcommit 61d8263c51b18b8a935c3d8a33ff49ba4d519a86[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Sat May 31 20:08:05 2025 -0500
+
+    agregando el favicon
+
+[33mcommit d51b85d692b7e282db9ec6d2fa77e1c939373642[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Sat May 31 20:03:30 2025 -0500
+
+    cambios en favicon y nombre de web
+
+[33mcommit 9c41b469d3d00dfa99a9af35fd87fe06bca7bc4c[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Sat May 31 19:53:36 2025 -0500
+
+    toda la UI lista, queda agregar base de datos con firebase, y auth con google ahahaha
+
+[33mcommit d58f3bcba19ff5405bed09b597d4d3237cea9490[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Sat May 31 19:38:44 2025 -0500
+
+    toda la ui lista sin BBDD ni Auth
+
+[33mcommit 79fb69e8ba8521565d58a5c8fceb89c10e72380e[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Sat May 31 19:27:12 2025 -0500
+
+    todas las pantallas creadas, solo algunos ajustes
+
+[33mcommit 9ce420b7a47f9c60023fce2776aaf307d786ec59[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Sat May 31 18:57:28 2025 -0500
+
+    adatado todo responsive a version movil
+
+[33mcommit 01ae9a62ed50f69a41de085473a3eb87b84b662e[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Sat May 31 00:47:29 2025 -0500
+
+    esto esta quedando rechimba ahhaha
+
+[33mcommit 54a8b195fa177a07ae1f9098d7da6abb0b444dbd[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Sat May 31 00:39:00 2025 -0500
+
+    pantallas ui y ux avanzadas perfil, login, registro rapido, reporte de objeto, mis objetos, home, sigue ver similitudes, desistir y lo encontre
+
+[33mcommit 822bba3e238ecc88f6c2f50744e281ca34bc960b[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Sat May 31 00:05:34 2025 -0500
+
+    reportar objeto perdido melo
+
+[33mcommit 9dcad92f330625274bc9835e1226190e0f8cc6d5[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 23:31:20 2025 -0500
+
+    mejorando UX de 2 ubicaciones
+
+[33mcommit 83ac6a0e8c733fe966380f629f158aed2e87e2bd[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 23:26:33 2025 -0500
+
+    reporte casi listo
+
+[33mcommit e874112dbc07d725b455ba289f5a04c9c6759479[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 23:21:12 2025 -0500
+
+    reportar objeto perdido en proceso, vamos bien sin estropear
+
+[33mcommit de87e2e2a5dddec2a7610ccc4063dcd8163036a1[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 23:11:14 2025 -0500
+
+    cambio en el nombrado para login form
+
+[33mcommit f8c8ccdbfa34cc1a438065ceee873cd39a33cd47[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 22:51:30 2025 -0500
+
+    dos secciones en home, ahora vamos a diseñarlas
+
+[33mcommit 9489ec76ec0a8593b7a6f1e39c3716b78a2a68d2[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 22:20:51 2025 -0500
+
+    zona de perfil agregadada
+
+[33mcommit 8f0fcab662582831849399bf42ac43117a9fc628[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 22:10:15 2025 -0500
+
+    pantallas con header y modo oscuro realizado
+
+[33mcommit 1cbd871341c3b41e79979e161badfe246dc53804[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 21:04:07 2025 -0500
+
+    aplicando modo oscuro
+
+[33mcommit bf6df058c8ed665996c21104b9577cc894a480fb[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 18:47:23 2025 -0500
+
+    pequeños cambios de linter tsconfig para build no estricto
+
+[33mcommit a93a32441cd8a5926e4b1dad67fb5da1ec411f1b[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 18:39:50 2025 -0500
+
+    primera pantalla lista, solo falta integrar el google
+
+[33mcommit 467e9d5725cd0a3f4e4ea605215e6cb2cc28ad03[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Fri May 30 17:36:57 2025 -0500
+
+    mejroando interfaz de usuario
+
+[33mcommit 6113d7e8fe112624b2ed1734e5b23475e76a0a9a[m
+Author: sebudea <sebastian.aristizabalc@udea.edu.co>
+Date:   Thu May 15 22:48:46 2025 -0500
+
+    inciiando proyecto lostudea en react
