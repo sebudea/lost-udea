@@ -24,13 +24,13 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
-import { LOCATIONS, Location } from "../../constants/locations";
-import { ITEM_TYPES, ItemType } from "../../constants/itemTypes";
+import { LOCATIONS } from "../../constants/locations";
+import { ITEM_TYPES } from "../../constants/itemTypes";
 import { useState } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { ImageUpload } from "../../components/ImageUpload/ImageUpload";
 import { useNavigate } from "react-router-dom";
-import type { FoundItem } from "./types";
+import type { Location, ItemType, FoundItem, LostItem } from "../../types";
 
 // Configuramos el locale español
 dayjs.locale("es");

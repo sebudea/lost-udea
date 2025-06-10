@@ -1,7 +1,4 @@
-export interface ItemType {
-  value: string;
-  label: string;
-}
+import { ItemType } from "../types";
 
 export const ITEM_TYPES: ItemType[] = [
   { value: 'carnet', label: 'Carné Estudiantil' },
