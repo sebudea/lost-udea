@@ -7,7 +7,8 @@ import {
   Grid,
   Button,
   IconButton,
-  Divider,
+  CardMedia,
+  Chip,
 } from "@mui/material";
 import { AuthLayout } from "../components/Layout/AuthLayout";
 import HomeIcon from "@mui/icons-material/Home";
@@ -16,6 +17,9 @@ import dayjs from "dayjs";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useItemsStore } from "../stores/itemsStore";
 import type { FoundItem } from "../types/models";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 
 interface MatchesPageProps {
   isDarkMode: boolean;
@@ -25,7 +29,7 @@ interface MatchesPageProps {
 export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
   const navigate = useNavigate();
   const { itemId } = useParams();
-  const { foundItems, getLostItemById } = useItemsStore();
+  const { foundItems, getLostItemById, createMatch } = useItemsStore();
 
   // Obtener el objeto perdido actual
   const currentLostItem = itemId ? getLostItemById(itemId) : null;
@@ -38,6 +42,13 @@ export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
           foundItem.status === "pending"
       )
     : [];
+
+  const handleVerifyMatch = (matchId: string) => {
+    if (itemId) {
+      createMatch(itemId, matchId);
+      navigate(`/thank-you/${itemId}`);
+    }
+  };
 
   return (
     <AuthLayout isDarkMode={isDarkMode} onToggleTheme={onToggleTheme}>
@@ -72,6 +83,24 @@ export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
             </Typography>
           </Box>
 
+          {currentLostItem && (
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h6" gutterBottom>
+                Tu objeto perdido:
+              </Typography>
+              <Card sx={{ bgcolor: "action.hover" }}>
+                <CardContent>
+                  <Typography variant="h6" color="primary" gutterBottom>
+                    {currentLostItem.type.label}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {currentLostItem.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Box>
+          )}
+
           {!currentLostItem ? (
             <Card sx={{ textAlign: "center", py: 4 }}>
               <CardContent>
@@ -84,54 +113,120 @@ export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
             <Grid container spacing={3}>
               {matches.map((match) => (
                 <Grid item xs={12} key={match.id}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        {match.type.label}
-                      </Typography>
-
-                      <Box sx={{ mt: 2 }}>
-                        <Typography variant="body2" color="text.secondary">
-                          <strong>Ubicación:</strong> {match.location}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          <strong>Fecha de encuentro:</strong>{" "}
-                          {dayjs(match.foundDate).format("DD/MM/YYYY")}
-                        </Typography>
-                        {match.image && (
-                          <Box sx={{ mt: 2, mb: 2 }}>
-                            <img
-                              src={match.image}
-                              alt="Imagen del objeto"
-                              style={{
-                                maxWidth: "100%",
-                                maxHeight: "200px",
-                                borderRadius: "8px",
+                  <Card
+                    sx={{
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "translateY(-4px)",
+                        boxShadow: (theme) => theme.shadows[4],
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: { xs: "100%", sm: "240px" },
+                          height: { xs: "240px", sm: "240px" },
+                          position: "relative",
+                          bgcolor: "action.hover",
+                        }}
+                      >
+                        {match.image ? (
+                          <CardMedia
+                            component="img"
+                            sx={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                            image={match.image}
+                            alt={match.type.label}
+                          />
+                        ) : (
+                          <Box
+                            sx={{
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <ImageNotSupportedIcon
+                              sx={{
+                                fontSize: 80,
+                                color: "text.secondary",
+                                opacity: 0.5,
                               }}
                             />
                           </Box>
                         )}
                       </Box>
 
-                      <Box
-                        sx={{
-                          mt: 2,
-                          display: "flex",
-                          justifyContent: "flex-end",
-                        }}
-                      >
+                      <Box sx={{ flex: 1, p: 3 }}>
+                        <Typography variant="h6" gutterBottom>
+                          {match.type.label}
+                        </Typography>
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 1,
+                            mb: 3,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <LocationOnIcon color="action" fontSize="small" />
+                            <Typography variant="body2" color="text.secondary">
+                              {match.location}
+                            </Typography>
+                          </Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <CalendarTodayIcon
+                              color="action"
+                              fontSize="small"
+                            />
+                            <Typography variant="body2" color="text.secondary">
+                              {dayjs(match.foundDate).format("DD/MM/YYYY")}
+                            </Typography>
+                          </Box>
+                        </Box>
+
                         <Button
                           variant="contained"
                           color="primary"
-                          onClick={() => {
-                            // Aquí implementaremos la verificación de coincidencia
-                            console.log("Verificar coincidencia", match.id);
+                          fullWidth
+                          onClick={() => handleVerifyMatch(match.id)}
+                          sx={{
+                            mt: "auto",
+                            py: 1.5,
+                            fontWeight: "bold",
+                            boxShadow: (theme) =>
+                              `0 4px 12px ${theme.palette.primary.main}40`,
                           }}
                         >
                           Verificar Coincidencia
                         </Button>
                       </Box>
-                    </CardContent>
+                    </Box>
                   </Card>
                 </Grid>
               ))}
