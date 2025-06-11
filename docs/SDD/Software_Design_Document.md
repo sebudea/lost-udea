@@ -410,3 +410,5 @@ interface ItemBase {
 1. **Repository Pattern**
    - Abstracción de acceso a datos
    - Servicios Firebase encapsulados
+
+ok no, vamos a empezar otra vez, revisa el proyecto, y mira los modelos que usamos, se encuentran en la carpeta @/types , ahora quiero que implementemos estado, primero quieor que nos enfoqes en que cuando un usuario entre en el @RegisterPage.tsx se captre el estado del usuario, lo que el usuairo ingrese se capture en el estado y se muestre luego en @ProfilePage.tsx , luego cuando el usuario entre y se dirija a @ReportPage.tsx y haga un reporte el bjeto que se cree sea un LostItem de los que definimos en @models.ts , los LostItem que se reportan deben aparecer luego en @MyLostItemsPage.tsx , luego si el usuario quiero hacer logout pues cierra la sesion, entiendes??

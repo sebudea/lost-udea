@@ -2,14 +2,15 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
-
-interface RegisterFormValues {
-  fullName: string;
-  phoneNumber: string;
-  idNumber: string;
-}
+import { useUserStore } from "../../stores/userStore";
+import type { UserFormData } from "../../types/models";
 
 const validationSchema = yup.object({
+  email: yup
+    .string()
+    .email("Ingresa un email válido")
+    .required("El email es requerido")
+    .matches(/@udea\.edu\.co$/, "Debe ser un correo de la UdeA"),
   fullName: yup.string().required("Por favor ingresa tu nombre completo"),
   phoneNumber: yup
     .string()
@@ -23,17 +24,19 @@ const validationSchema = yup.object({
 
 export function RegisterForm() {
   const navigate = useNavigate();
+  const register = useUserStore((state) => state.register);
 
-  const formik = useFormik<RegisterFormValues>({
+  const formik = useFormik<UserFormData>({
     initialValues: {
+      email: "",
       fullName: "",
       phoneNumber: "",
       idNumber: "",
+      role: "seeker",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log(values);
-      // Aquí iría la lógica para guardar el usuario
+      register(values);
       navigate("/home");
     },
   });
@@ -55,6 +58,18 @@ export function RegisterForm() {
 
       <form onSubmit={formik.handleSubmit}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 3 }}>
+          <TextField
+            fullWidth
+            id="email"
+            name="email"
+            label="Correo electrónico"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
+          />
+
           <TextField
             fullWidth
             id="fullName"

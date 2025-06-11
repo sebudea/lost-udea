@@ -24,6 +24,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
+import { useItemsStore } from "../stores/itemsStore";
+import { useUserStore } from "../stores/userStore";
 
 interface MyLostItemsPageProps {
   isDarkMode: boolean;
@@ -38,45 +40,16 @@ export function MyLostItemsPage({
   const [itemToDelete, setItemToDelete] = useState<LostItem | null>(null);
   const [itemFound, setItemFound] = useState<LostItem | null>(null);
 
-  // Simulación de datos (esto se reemplazará con datos reales de Firebase)
-  const mockLostItems: LostItem[] = [
-    {
-      id: "1",
-      type: { value: "laptop", label: "Computador Portátil" },
-      locations: [Location.BLOQUE_21, Location.BLOQUE_8],
-      lostDate: new Date(),
-      description:
-        "MacBook Pro 13 pulgadas, color gris espacial, con sticker de React en la tapa",
-      status: "pending",
-      seekerId: "user123",
-      imageUrl:
-        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?ixlib=rb-4.0.3",
-    },
-    {
-      id: "2",
-      type: { value: "backpack", label: "Mochila" },
-      locations: [Location.BLOQUE_22, Location.BLOQUE_14],
-      lostDate: new Date(Date.now() - 86400000 * 2), // hace 2 días
-      description:
-        "Mochila negra marca Totto con libros de cálculo y un estuche azul",
-      status: "pending",
-      seekerId: "user123",
-      imageUrl:
-        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3",
-    },
-    {
-      id: "3",
-      type: { value: "headphones", label: "Audífonos Inalámbricos" },
-      locations: [Location.BLOQUE_22, Location.BLOQUE_12],
-      lostDate: new Date(Date.now() - 86400000), // ayer
-      description:
-        "AirPods Pro con estuche de carga, tiene un pequeño rasguño en la parte trasera del estuche",
-      status: "pending",
-      seekerId: "user123",
-      imageUrl:
-        "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?ixlib=rb-4.0.3",
-    },
-  ];
+  const currentUser = useUserStore((state) => state.currentUser);
+  const { getLostItemsByUser, deleteLostItem, updateLostItem } =
+    useItemsStore();
+
+  const lostItems = currentUser ? getLostItemsByUser(currentUser.id) : [];
+
+  if (!currentUser) {
+    navigate("/");
+    return null;
+  }
 
   const handleDesist = (item: LostItem) => {
     setItemToDelete(item);
@@ -84,8 +57,7 @@ export function MyLostItemsPage({
 
   const handleConfirmDesist = () => {
     if (itemToDelete) {
-      // Aquí irá la lógica para eliminar el objeto de la base de datos
-      console.log("Eliminando objeto", itemToDelete.id);
+      deleteLostItem(itemToDelete.id);
       setItemToDelete(null);
     }
   };
@@ -100,6 +72,7 @@ export function MyLostItemsPage({
 
   const handleConfirmFound = () => {
     if (itemFound) {
+      updateLostItem(itemFound.id, { status: "found" });
       navigate(`/found-location/${itemFound.id}`);
       setItemFound(null);
     }
@@ -135,9 +108,9 @@ export function MyLostItemsPage({
             Mis Objetos Perdidos
           </Typography>
 
-          {mockLostItems.length > 0 ? (
+          {lostItems.length > 0 ? (
             <Grid container spacing={3}>
-              {mockLostItems.map((item) => (
+              {lostItems.map((item) => (
                 <Grid item xs={12} key={item.id}>
                   <Card>
                     <Box
