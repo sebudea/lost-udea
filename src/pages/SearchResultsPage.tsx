@@ -13,7 +13,7 @@ import {
 import { AuthLayout } from "../components/Layout/AuthLayout";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate, useLocation } from "react-router-dom";
-import type { FoundItem, LostItem } from "../features/items/types";
+import type { FoundItem, LostItem } from "../types/models";
 
 interface SearchResultsPageProps {
   isDarkMode: boolean;
@@ -66,13 +66,13 @@ export function SearchResultsPage({
                           component="img"
                           height="200"
                           image={item.image}
-                          alt={`Imagen de ${item.type}`}
+                          alt={`Imagen de ${item.type.label}`}
                           sx={{ objectFit: "cover" }}
                         />
                       )}
                       <CardContent>
                         <Typography variant="h6" gutterBottom>
-                          {item.type}
+                          {item.type.label}
                         </Typography>
                         <Typography
                           variant="body2"
@@ -86,7 +86,7 @@ export function SearchResultsPage({
                           color="text.secondary"
                           paragraph
                         >
-                          {item.description}
+                          Fecha: {new Date(item.foundDate).toLocaleDateString()}
                         </Typography>
                         <Button
                           variant="contained"

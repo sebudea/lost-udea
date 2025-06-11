@@ -17,7 +17,8 @@ import {
 import { AuthLayout } from "../components/Layout/AuthLayout";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
-import type { LostItem } from "../features/items/types";
+import type { LostItem } from "../types/models";
+import { Location } from "../types/enums";
 import dayjs from "dayjs";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -41,36 +42,36 @@ export function MyLostItemsPage({
   const mockLostItems: LostItem[] = [
     {
       id: "1",
-      type: "Computador Portátil",
-      locations: ["Bloque 21 - Fac. de Ingeniería", "Biblioteca Central"],
+      type: { value: "laptop", label: "Computador Portátil" },
+      locations: [Location.BLOQUE_21, Location.BLOQUE_8],
       lostDate: new Date(),
       description:
         "MacBook Pro 13 pulgadas, color gris espacial, con sticker de React en la tapa",
-      status: "searching",
+      status: "pending",
       seekerId: "user123",
       imageUrl:
         "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?ixlib=rb-4.0.3",
     },
     {
       id: "2",
-      type: "Mochila",
-      locations: ["Cafetería Central", "Bloque 14 - Fac. Ciencias Económicas"],
+      type: { value: "backpack", label: "Mochila" },
+      locations: [Location.BLOQUE_22, Location.BLOQUE_14],
       lostDate: new Date(Date.now() - 86400000 * 2), // hace 2 días
       description:
         "Mochila negra marca Totto con libros de cálculo y un estuche azul",
-      status: "searching",
+      status: "pending",
       seekerId: "user123",
       imageUrl:
         "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3",
     },
     {
       id: "3",
-      type: "Audífonos Inalámbricos",
-      locations: ["Coliseo Universitario", "Bloque 12 - Educación Física"],
+      type: { value: "headphones", label: "Audífonos Inalámbricos" },
+      locations: [Location.BLOQUE_22, Location.BLOQUE_12],
       lostDate: new Date(Date.now() - 86400000), // ayer
       description:
         "AirPods Pro con estuche de carga, tiene un pequeño rasguño en la parte trasera del estuche",
-      status: "searching",
+      status: "pending",
       seekerId: "user123",
       imageUrl:
         "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?ixlib=rb-4.0.3",
@@ -165,7 +166,7 @@ export function MyLostItemsPage({
                               objectPosition: "center",
                             }}
                             image={item.imageUrl}
-                            alt={`Imagen de ${item.type}`}
+                            alt={`Imagen de ${item.type.label}`}
                           />
                         </Box>
                       )}
@@ -194,7 +195,7 @@ export function MyLostItemsPage({
                             }}
                           >
                             <Typography variant="h6" sx={{ mb: 0 }}>
-                              {item.type}
+                              {item.type.label}
                             </Typography>
                             <Box
                               sx={{
@@ -286,9 +287,11 @@ export function MyLostItemsPage({
                           >
                             <strong>Posibles ubicaciones:</strong>
                             <ul style={{ margin: "4px 0" }}>
-                              {item.locations.map((location, index) => (
-                                <li key={index}>{location}</li>
-                              ))}
+                              {item.locations.map(
+                                (location: string, index: number) => (
+                                  <li key={index}>{location}</li>
+                                )
+                              )}
                             </ul>
                           </Typography>
 
@@ -355,7 +358,7 @@ export function MyLostItemsPage({
           {itemToDelete && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle2" color="text.secondary">
-                Objeto: {itemToDelete.type}
+                Objeto: {itemToDelete.type.label}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Fecha de pérdida:{" "}
@@ -395,7 +398,7 @@ export function MyLostItemsPage({
           {itemFound && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle2" color="text.secondary">
-                Objeto: {itemFound.type}
+                Objeto: {itemFound.type.label}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Fecha de pérdida:{" "}

@@ -14,7 +14,7 @@ export interface FoundItem {
   type: ItemType;
   location: Location;
   foundDate: Date;
-  description: string; // Descripción generada por IA
+  // description: string; // Descripción generada por IA, por ahora no lo usaremos
   image: string;
   status: FoundItemStatus;
   finderId: string; // ID del usuario que lo encontró
