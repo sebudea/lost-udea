@@ -21,10 +21,18 @@ import { ImageUpload } from "../../components/ImageUpload/ImageUpload";
 import { ITEM_TYPES } from "../../constants/itemTypes";
 import { LOCATIONS } from "../../constants/locations";
 import { validationSchema } from "../../utils/validation";
-import type { FormValues } from "./types";
+import { useItemsStore } from "../../stores/itemsStore";
+import type { ItemType, Location } from "../../types/enums";
 
 // Configuramos el locale español
 dayjs.locale("es");
+
+interface FormValues {
+  itemType: string;
+  location: string;
+  date: Date;
+  image: File | null;
+}
 
 interface FoundItemFormProps {
   onSuccess: (location: string) => void;
@@ -32,6 +40,7 @@ interface FoundItemFormProps {
 
 export function FoundItemForm({ onSuccess }: FoundItemFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { addFoundItem } = useItemsStore();
 
   const formik = useFormik<FormValues>({
     initialValues: {
@@ -41,11 +50,53 @@ export function FoundItemForm({ onSuccess }: FoundItemFormProps) {
       image: null,
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
-      formik.resetForm();
-      setPreviewUrl(null);
-      onSuccess(values.location);
+    onSubmit: async (values) => {
+      try {
+        // Convertir la imagen a base64 si existe
+        let imageData = "";
+        if (values.image) {
+          const reader = new FileReader();
+          imageData = await new Promise<string>((resolve, reject) => {
+            reader.onload = () => {
+              const result = reader.result;
+              if (typeof result === "string") {
+                resolve(result);
+              } else {
+                reject(new Error("Failed to convert image to string"));
+              }
+            };
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(values.image as File);
+          });
+        }
+
+        // Encontrar el tipo de objeto completo
+        const selectedType = ITEM_TYPES.find(
+          (type) => type.value === values.itemType
+        );
+        if (!selectedType) {
+          throw new Error("Invalid item type");
+        }
+
+        // Crear el objeto encontrado
+        const foundItem = {
+          type: selectedType,
+          location: values.location as Location,
+          foundDate: values.date,
+          image: imageData,
+          finderId: "mock-finder-id", // ID simulado por ahora
+        };
+
+        // Agregar al store
+        addFoundItem(foundItem);
+
+        // Resetear el formulario
+        formik.resetForm();
+        setPreviewUrl(null);
+        onSuccess(values.location);
+      } catch (error) {
+        console.error("Error al procesar el objeto encontrado:", error);
+      }
     },
   });
 

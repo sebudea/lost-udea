@@ -14,49 +14,30 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useItemsStore } from "../stores/itemsStore";
+import type { FoundItem } from "../types/models";
 
 interface MatchesPageProps {
   isDarkMode: boolean;
   onToggleTheme: () => void;
 }
 
-// Tipo temporal para simular datos (esto vendrá de Firebase)
-interface FoundItem {
-  id: string;
-  type: string;
-  location: string;
-  foundDate: Date;
-  description: string;
-  status: "pending" | "delivered" | "matched";
-  finderId: string;
-}
-
 export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
   const navigate = useNavigate();
   const { itemId } = useParams();
+  const { foundItems, getLostItemById } = useItemsStore();
 
-  // Simulación de datos (esto se reemplazará con datos reales de Firebase)
-  const mockMatches: FoundItem[] = [
-    {
-      id: "1",
-      type: "Computador Portátil",
-      location: "Bloque 21 - Fac. de Ingeniería",
-      foundDate: new Date(),
-      description:
-        "MacBook Pro encontrado en el salón 21-301, color gris espacial",
-      status: "pending",
-      finderId: "finder123",
-    },
-    {
-      id: "2",
-      type: "Computador Portátil",
-      location: "Biblioteca Central",
-      foundDate: new Date(Date.now() - 86400000), // ayer
-      description: "Laptop encontrada en la sala de estudio del 2do piso",
-      status: "pending",
-      finderId: "finder456",
-    },
-  ];
+  // Obtener el objeto perdido actual
+  const currentLostItem = itemId ? getLostItemById(itemId) : null;
+
+  // Filtrar los objetos encontrados que coinciden por tipo
+  const matches = currentLostItem
+    ? foundItems.filter(
+        (foundItem) =>
+          foundItem.type.value === currentLostItem.type.value &&
+          foundItem.status === "pending"
+      )
+    : [];
 
   return (
     <AuthLayout isDarkMode={isDarkMode} onToggleTheme={onToggleTheme}>
@@ -91,14 +72,22 @@ export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
             </Typography>
           </Box>
 
-          {mockMatches.length > 0 ? (
+          {!currentLostItem ? (
+            <Card sx={{ textAlign: "center", py: 4 }}>
+              <CardContent>
+                <Typography color="text.secondary">
+                  No se pudo encontrar el objeto perdido.
+                </Typography>
+              </CardContent>
+            </Card>
+          ) : matches.length > 0 ? (
             <Grid container spacing={3}>
-              {mockMatches.map((match) => (
+              {matches.map((match) => (
                 <Grid item xs={12} key={match.id}>
                   <Card>
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
-                        {match.type}
+                        {match.type.label}
                       </Typography>
 
                       <Box sx={{ mt: 2 }}>
@@ -109,17 +98,19 @@ export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
                           <strong>Fecha de encuentro:</strong>{" "}
                           {dayjs(match.foundDate).format("DD/MM/YYYY")}
                         </Typography>
-                        <Divider sx={{ my: 1.5 }} />
-                        <Typography variant="body2">
-                          <strong>Descripción:</strong>
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          paragraph
-                        >
-                          {match.description}
-                        </Typography>
+                        {match.image && (
+                          <Box sx={{ mt: 2, mb: 2 }}>
+                            <img
+                              src={match.image}
+                              alt="Imagen del objeto"
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "200px",
+                                borderRadius: "8px",
+                              }}
+                            />
+                          </Box>
+                        )}
                       </Box>
 
                       <Box
@@ -133,6 +124,7 @@ export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
                           variant="contained"
                           color="primary"
                           onClick={() => {
+                            // Aquí implementaremos la verificación de coincidencia
                             console.log("Verificar coincidencia", match.id);
                           }}
                         >

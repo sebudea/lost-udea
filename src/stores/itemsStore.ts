@@ -10,6 +10,7 @@ interface ItemsState {
   updateLostItem: (id: string, item: Partial<LostItem>) => void;
   deleteLostItem: (id: string) => void;
   getLostItemsByUser: (userId: string) => LostItem[];
+  getLostItemById: (id: string) => LostItem | null;
   // Actions para Found Items
   addFoundItem: (item: Omit<FoundItem, 'id' | 'status'>) => void;
   updateFoundItem: (id: string, item: Partial<FoundItem>) => void;
@@ -43,6 +44,11 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
   getLostItemsByUser: (userId) => {
     const state = get();
     return state.lostItems.filter(item => item.seekerId === userId);
+  },
+
+  getLostItemById: (id) => {
+    const state = get();
+    return state.lostItems.find(item => item.id === id) || null;
   },
 
   // Found Items actions

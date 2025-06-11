@@ -42,10 +42,19 @@ export function MyLostItemsPage({
   const [itemFound, setItemFound] = useState<LostItem | null>(null);
 
   const currentUser = useUserStore((state) => state.currentUser);
-  const { getLostItemsByUser, deleteLostItem, updateLostItem } =
+  const { getLostItemsByUser, deleteLostItem, updateLostItem, foundItems } =
     useItemsStore();
 
   const lostItems = currentUser ? getLostItemsByUser(currentUser.id) : [];
+
+  // Función para contar coincidencias para un item específico
+  const getMatchesCount = (item: LostItem) => {
+    return foundItems.filter(
+      (foundItem) =>
+        foundItem.type.value === item.type.value &&
+        foundItem.status === "pending"
+    ).length;
+  };
 
   if (!currentUser) {
     navigate("/");
@@ -220,7 +229,8 @@ export function MyLostItemsPage({
                                   },
                                 }}
                               >
-                                2 coincidencias
+                                {getMatchesCount(item)} coincidencia
+                                {getMatchesCount(item) !== 1 ? "s" : ""}
                               </Button>
                               <Button
                                 size="small"
