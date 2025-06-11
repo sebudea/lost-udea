@@ -31,6 +31,8 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { ImageUpload } from "../../components/ImageUpload/ImageUpload";
 import { useNavigate } from "react-router-dom";
 import type { Location, ItemType, FoundItem, LostItem } from "../../types";
+import { useItemsStore } from "../../stores/itemsStore";
+import { useUserStore } from "../../stores/userStore";
 
 // Configuramos el locale español
 dayjs.locale("es");
@@ -70,6 +72,8 @@ export function ReportLostItemForm() {
     consequences: false,
   });
   const navigate = useNavigate();
+  const { addLostItem } = useItemsStore();
+  const currentUser = useUserStore((state) => state.currentUser);
 
   const allConfirmed = Object.values(confirmations).every(Boolean);
 
@@ -97,18 +101,39 @@ export function ReportLostItemForm() {
 
   const handleConfirm = async () => {
     setShowConfirmDialog(false);
-    // Simulación de búsqueda de coincidencias (esto se reemplazará con la lógica real)
-    const mockMatches: FoundItem[] = [];
 
-    // Navegar a la página de resultados
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+
+    // Find the matching ItemType object
+    const selectedType = ITEM_TYPES.find(
+      (type) => type.value === formik.values.type
+    );
+    if (!selectedType) {
+      console.error("Invalid item type");
+      return;
+    }
+
+    // Create the lost item with proper type
+    const newItem = {
+      ...formik.values,
+      type: selectedType,
+      seekerId: currentUser.id,
+    };
+
+    // Add to store
+    addLostItem(newItem);
+
+    // Navigate to search results
     navigate("/search-results", {
       state: {
-        matches: mockMatches,
+        matches: [],
         lostItem: {
-          ...formik.values,
+          ...newItem,
           id: Date.now().toString(),
           status: "searching" as const,
-          seekerId: "user123",
         },
       },
     });
