@@ -1,10 +1,11 @@
 import { create } from 'zustand';
-import { LostItem, FoundItem } from '../types/models';
+import { LostItem, FoundItem, Match } from '../types/models';
 import { ItemType, Location } from '../types/enums';
 
 interface ItemsState {
   lostItems: LostItem[];
   foundItems: FoundItem[];
+  matches: Match[];
   // Actions para Lost Items
   addLostItem: (item: Omit<LostItem, 'id' | 'status'>) => void;
   updateLostItem: (id: string, item: Partial<LostItem>) => void;
@@ -16,11 +17,15 @@ interface ItemsState {
   updateFoundItem: (id: string, item: Partial<FoundItem>) => void;
   deleteFoundItem: (id: string) => void;
   getFoundItemsByUser: (userId: string) => FoundItem[];
+  // Actions para Matches
+  createMatch: (lostItemId: string, foundItemId: string) => void;
+  getMatchesByLostItemId: (lostItemId: string) => Match[];
 }
 
 export const useItemsStore = create<ItemsState>((set, get) => ({
   lostItems: [],
   foundItems: [],
+  matches: [],
 
   // Lost Items actions
   addLostItem: (item) => set((state) => ({
@@ -73,5 +78,31 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
   getFoundItemsByUser: (userId) => {
     const state = get();
     return state.foundItems.filter(item => item.finderId === userId);
+  },
+
+  // Match actions
+  createMatch: (lostItemId, foundItemId) => {
+    const state = get();
+    const newMatch: Match = {
+      id: Math.random().toString(36).substr(2, 9),
+      lostItemId,
+      foundItemId,
+      status: "completed",
+      matchDate: new Date(),
+    };
+
+    // Actualizar estado de ambos items
+    get().updateLostItem(lostItemId, { status: "matched" });
+    get().updateFoundItem(foundItemId, { status: "matched" });
+
+    // Agregar el match
+    set((state) => ({
+      matches: [...state.matches, newMatch]
+    }));
+  },
+
+  getMatchesByLostItemId: (lostItemId) => {
+    const state = get();
+    return state.matches.filter(match => match.lostItemId === lostItemId);
   },
 })); 

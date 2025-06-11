@@ -45,7 +45,9 @@ export function MyLostItemsPage({
   const { getLostItemsByUser, deleteLostItem, updateLostItem, foundItems } =
     useItemsStore();
 
-  const lostItems = currentUser ? getLostItemsByUser(currentUser.id) : [];
+  // Obtener solo los objetos perdidos pendientes
+  const allUserItems = currentUser ? getLostItemsByUser(currentUser.id) : [];
+  const lostItems = allUserItems.filter((item) => item.status === "pending");
 
   // Función para contar coincidencias para un item específico
   const getMatchesCount = (item: LostItem) => {
