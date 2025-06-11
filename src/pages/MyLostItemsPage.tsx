@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { AuthLayout } from "../components/Layout/AuthLayout";
 import HomeIcon from "@mui/icons-material/Home";
+import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import { useNavigate } from "react-router-dom";
 import type { LostItem } from "../types/models";
 import { Location } from "../types/enums";
@@ -120,16 +121,17 @@ export function MyLostItemsPage({
                         height: { xs: "auto", sm: "220px" },
                       }}
                     >
-                      {item.imageUrl && (
-                        <Box
-                          sx={{
-                            width: { xs: "100%", sm: "180px" },
-                            height: { xs: "200px", sm: "100%" },
-                            flexShrink: 0,
-                            overflow: "hidden",
-                            position: "relative",
-                          }}
-                        >
+                      <Box
+                        sx={{
+                          width: { xs: "100%", sm: "140px" },
+                          height: { xs: "250px", sm: "100%" },
+                          flexShrink: 0,
+                          overflow: "hidden",
+                          position: "relative",
+                          borderRadius: 1,
+                        }}
+                      >
+                        {item.imageUrl ? (
                           <CardMedia
                             component="img"
                             sx={{
@@ -141,8 +143,27 @@ export function MyLostItemsPage({
                             image={item.imageUrl}
                             alt={`Imagen de ${item.type.label}`}
                           />
-                        </Box>
-                      )}
+                        ) : (
+                          <Box
+                            sx={{
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              bgcolor: "action.hover",
+                            }}
+                          >
+                            <ImageNotSupportedIcon
+                              sx={{
+                                fontSize: 60,
+                                color: "text.secondary",
+                                opacity: 0.5,
+                              }}
+                            />
+                          </Box>
+                        )}
+                      </Box>
                       <Box
                         sx={{
                           flex: 1,

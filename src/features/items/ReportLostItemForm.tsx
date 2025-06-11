@@ -116,10 +116,35 @@ export function ReportLostItemForm() {
       return;
     }
 
-    // Create the lost item with proper type
+    // Convert image File to data URL if it exists
+    let imageUrl: string | undefined = undefined;
+    if (formik.values.image) {
+      const reader = new FileReader();
+      try {
+        imageUrl = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => {
+            const result = reader.result;
+            if (typeof result === "string") {
+              resolve(result);
+            } else {
+              reject(new Error("Failed to convert image to string"));
+            }
+          };
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(formik.values.image as File);
+        });
+      } catch (error) {
+        console.error("Error converting image:", error);
+      }
+    }
+
+    // Create the lost item with proper type and image URL
     const newItem = {
-      ...formik.values,
       type: selectedType,
+      locations: formik.values.locations,
+      lostDate: formik.values.lostDate,
+      description: formik.values.description,
+      imageUrl,
       seekerId: currentUser.id,
     };
 
