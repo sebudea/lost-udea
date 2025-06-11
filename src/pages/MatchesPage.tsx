@@ -9,6 +9,10 @@ import {
   IconButton,
   CardMedia,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { AuthLayout } from "../components/Layout/AuthLayout";
 import HomeIcon from "@mui/icons-material/Home";
@@ -20,6 +24,7 @@ import type { FoundItem } from "../types/models";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
+import { useState } from "react";
 
 interface MatchesPageProps {
   isDarkMode: boolean;
@@ -30,6 +35,7 @@ export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
   const navigate = useNavigate();
   const { itemId } = useParams();
   const { foundItems, getLostItemById, createMatch } = useItemsStore();
+  const [matchToVerify, setMatchToVerify] = useState<FoundItem | null>(null);
 
   // Obtener el objeto perdido actual
   const currentLostItem = itemId ? getLostItemById(itemId) : null;
@@ -47,6 +53,20 @@ export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
     if (itemId) {
       createMatch(itemId, matchId);
       navigate(`/thank-you/${itemId}`);
+    }
+  };
+
+  const handleOpenVerifyDialog = (match: FoundItem) => {
+    setMatchToVerify(match);
+  };
+
+  const handleCloseVerifyDialog = () => {
+    setMatchToVerify(null);
+  };
+
+  const handleConfirmVerify = () => {
+    if (matchToVerify) {
+      handleVerifyMatch(matchToVerify.id);
     }
   };
 
@@ -214,7 +234,7 @@ export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
                           variant="contained"
                           color="primary"
                           fullWidth
-                          onClick={() => handleVerifyMatch(match.id)}
+                          onClick={() => handleOpenVerifyDialog(match)}
                           sx={{
                             mt: "auto",
                             py: 1.5,
@@ -242,6 +262,65 @@ export function MatchesPage({ isDarkMode, onToggleTheme }: MatchesPageProps) {
           )}
         </Container>
       </Box>
+
+      <Dialog
+        open={matchToVerify !== null}
+        onClose={handleCloseVerifyDialog}
+        aria-labelledby="verify-dialog-title"
+      >
+        <DialogTitle id="verify-dialog-title">¿Este es tu objeto?</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ mb: 2 }}>
+            ¡Genial! Antes de proceder con la verificación, por favor confirma
+            que este objeto coincide con el que estás buscando. Revisa
+            cuidadosamente los detalles:
+          </Typography>
+          {matchToVerify && (
+            <Box sx={{ mb: 3, p: 2, bgcolor: "action.hover", borderRadius: 1 }}>
+              <Typography variant="subtitle2" color="primary" gutterBottom>
+                Detalles del objeto encontrado:
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Tipo:</strong> {matchToVerify.type.label}
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Ubicación:</strong> {matchToVerify.location}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Fecha de encuentro:</strong>{" "}
+                {dayjs(matchToVerify.foundDate).format("DD/MM/YYYY")}
+              </Typography>
+            </Box>
+          )}
+          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+            Al confirmar esta coincidencia:
+          </Typography>
+          <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+            <Typography component="li" variant="body2" color="text.secondary">
+              Podrás coordinar la recuperación de tu objeto
+            </Typography>
+            <Typography component="li" variant="body2" color="text.secondary">
+              El objeto se marcará como emparejado y se retirará de la lista de
+              búsqueda
+            </Typography>
+            <Typography component="li" variant="body2" color="text.secondary">
+              Te ayudaremos con los siguientes pasos para recuperar tu objeto
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseVerifyDialog} color="inherit">
+            No es mi objeto
+          </Button>
+          <Button
+            onClick={handleConfirmVerify}
+            color="primary"
+            variant="contained"
+          >
+            ¡Sí, es mi objeto!
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <IconButton
         onClick={() => navigate("/home")}

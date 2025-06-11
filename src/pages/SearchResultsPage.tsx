@@ -114,13 +114,15 @@ export function SearchResultsPage({
               </Typography>
               <Box sx={{ my: 3 }}>
                 <Typography color="text.secondary" paragraph>
-                  Hemos registrado tu reporte del objeto perdido. En este
-                  momento no encontramos coincidencias, pero estaremos atentos y
-                  te notificaremos si alguien encuentra tu objeto.
+                  Hemos registrado tu reporte del objeto perdido. Para ver las
+                  posibles coincidencias de tu objeto, dirígete a "Mis Objetos
+                  Perdidos" donde podrás ver y gestionar todas las coincidencias
+                  encontradas.
                 </Typography>
                 <Typography color="text.secondary">
-                  Puedes revisar el estado de tu reporte en cualquier momento
-                  desde el home.
+                  Recuerda revisar periódicamente la sección de coincidencias,
+                  ya que se actualizan constantemente con nuevos objetos
+                  encontrados.
                 </Typography>
               </Box>
               <Button

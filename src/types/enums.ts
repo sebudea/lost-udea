@@ -37,5 +37,5 @@ export interface ItemType {
 }
 
 export type FoundItemStatus = "pending" | "delivered" | "matched";
-export type LostItemStatus = "pending" | "found" | "matched";
+export type LostItemStatus = "pending" | "found" | "matched" | "desisted";
 export type MatchStatus = "pending" | "verified" | "completed";

@@ -69,7 +69,7 @@ export function MyLostItemsPage({
 
   const handleConfirmDesist = () => {
     if (itemToDelete) {
-      deleteLostItem(itemToDelete.id);
+      updateLostItem(itemToDelete.id, { status: "desisted" });
       setItemToDelete(null);
     }
   };

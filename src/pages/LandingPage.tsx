@@ -9,6 +9,7 @@ import {
   Tabs,
   Typography,
   AlertTitle,
+  Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CategoryIcon from "@mui/icons-material/Category";
@@ -18,6 +19,7 @@ import { useState } from "react";
 import { TabPanel } from "../components/TabPanel/TabPanel";
 import { FoundItemForm } from "../features/items/FoundItemForm";
 import { LoginForm } from "../features/auth/LoginForm";
+import { deliveryPoints, DEFAULT_DELIVERY_POINT } from "../data/deliveryPoints";
 
 interface LandingPageProps {
   isDarkMode: boolean;
@@ -46,17 +48,7 @@ export function LandingPage({ isDarkMode, onToggleTheme }: LandingPageProps) {
   };
 
   const getDeliveryLocation = (location: string) => {
-    // Mapa de ubicaciones y sus puntos de entrega
-    const deliveryPoints: { [key: string]: string } = {
-      "Bloque 21 - Fac. de Ingeniería":
-        "la secretaría de la Facultad de Ingeniería (Bloque 21, primer piso)",
-      "Biblioteca Central": "el mostrador principal de la Biblioteca Central",
-      // Agregar más ubicaciones según sea necesario
-    };
-
-    return (
-      deliveryPoints[location] || "la oficina de objetos perdidos más cercana"
-    );
+    return deliveryPoints[location] || DEFAULT_DELIVERY_POINT;
   };
 
   return (
@@ -162,15 +154,30 @@ export function LandingPage({ isDarkMode, onToggleTheme }: LandingPageProps) {
 
       <Snackbar
         open={successInfo.show}
-        autoHideDuration={10000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{
+          maxWidth: "600px",
+          width: "100%",
+          mb: 2,
+        }}
       >
         <Alert
           onClose={handleCloseSnackbar}
           severity="success"
           variant="filled"
-          sx={{ width: "100%" }}
+          sx={{
+            width: "100%",
+            "& .MuiAlert-action": {
+              alignItems: "center",
+              paddingTop: 0,
+            },
+          }}
+          action={
+            <Button color="inherit" size="small" onClick={handleCloseSnackbar}>
+              Cerrar
+            </Button>
+          }
         >
           <AlertTitle>¡Gracias por reportar el objeto!</AlertTitle>
           Por favor, entrega el objeto en{" "}

@@ -6,7 +6,10 @@ import {
   Tabs,
   Tab,
   IconButton,
-  Button,
+  Card,
+  CardContent,
+  Grid,
+  Chip,
 } from "@mui/material";
 import { AuthLayout } from "../components/Layout/AuthLayout";
 import { useState } from "react";
@@ -15,6 +18,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
 import { useItemsStore } from "../stores/itemsStore";
+import dayjs from "dayjs";
 
 interface ProfilePageProps {
   isDarkMode: boolean;
@@ -94,9 +98,6 @@ export function ProfilePage({ isDarkMode, onToggleTheme }: ProfilePageProps) {
               <Typography variant="h5" component="h1">
                 Información del Perfil
               </Typography>
-              <Button variant="outlined" color="error" onClick={handleLogout}>
-                Cerrar Sesión
-              </Button>
             </Box>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Typography>
@@ -128,13 +129,105 @@ export function ProfilePage({ isDarkMode, onToggleTheme }: ProfilePageProps) {
             <TabPanel value={tabValue} index={0}>
               <Box sx={{ p: 3 }}>
                 {lostItems.length > 0 ? (
-                  lostItems.map((item) => (
-                    <Typography key={item.id}>
-                      {item.type.label} - {item.description}
-                    </Typography>
-                  ))
+                  <Grid container spacing={2}>
+                    {lostItems.map((item) => (
+                      <Grid item xs={12} key={item.id}>
+                        <Card
+                          sx={{
+                            bgcolor: "background.paper",
+                            transition: "transform 0.2s",
+                            "&:hover": {
+                              transform: "translateY(-2px)",
+                            },
+                          }}
+                        >
+                          <CardContent>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                                mb: 1,
+                              }}
+                            >
+                              <Typography variant="h6" component="div">
+                                {item.type.label}
+                              </Typography>
+                              <Chip
+                                label={
+                                  item.status === "pending"
+                                    ? "Pendiente"
+                                    : item.status === "found"
+                                    ? "Encontrado"
+                                    : item.status === "matched"
+                                    ? "Emparejado"
+                                    : "Desistido"
+                                }
+                                color={
+                                  item.status === "pending"
+                                    ? "warning"
+                                    : item.status === "found"
+                                    ? "success"
+                                    : item.status === "matched"
+                                    ? "info"
+                                    : "default"
+                                }
+                                size="small"
+                                sx={
+                                  item.status === "desisted"
+                                    ? {
+                                        bgcolor: "grey.500",
+                                        color: "white",
+                                      }
+                                    : undefined
+                                }
+                              />
+                            </Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{ mb: 1 }}
+                            >
+                              Fecha de pérdida:{" "}
+                              {dayjs(item.lostDate).format("DD/MM/YYYY")}
+                            </Typography>
+                            <Typography variant="body2">
+                              {item.description}
+                            </Typography>
+                            {item.locations && item.locations.length > 0 && (
+                              <Box sx={{ mt: 1 }}>
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  Ubicaciones posibles:
+                                </Typography>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    gap: 0.5,
+                                    mt: 0.5,
+                                  }}
+                                >
+                                  {item.locations.map((location, index) => (
+                                    <Chip
+                                      key={index}
+                                      label={location}
+                                      size="small"
+                                      variant="outlined"
+                                    />
+                                  ))}
+                                </Box>
+                              </Box>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
                 ) : (
-                  <Typography color="text.secondary">
+                  <Typography color="text.secondary" textAlign="center">
                     No has reportado ningún objeto perdido aún.
                   </Typography>
                 )}
@@ -144,13 +237,70 @@ export function ProfilePage({ isDarkMode, onToggleTheme }: ProfilePageProps) {
             <TabPanel value={tabValue} index={1}>
               <Box sx={{ p: 3 }}>
                 {foundItems.length > 0 ? (
-                  foundItems.map((item) => (
-                    <Typography key={item.id}>
-                      {item.type.label} - Encontrado en {item.location}
-                    </Typography>
-                  ))
+                  <Grid container spacing={2}>
+                    {foundItems.map((item) => (
+                      <Grid item xs={12} key={item.id}>
+                        <Card
+                          sx={{
+                            bgcolor: "background.paper",
+                            transition: "transform 0.2s",
+                            "&:hover": {
+                              transform: "translateY(-2px)",
+                            },
+                          }}
+                        >
+                          <CardContent>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                                mb: 1,
+                              }}
+                            >
+                              <Typography variant="h6" component="div">
+                                {item.type.label}
+                              </Typography>
+                              <Chip
+                                label={
+                                  item.status === "pending"
+                                    ? "Pendiente"
+                                    : item.status === "delivered"
+                                    ? "Entregado"
+                                    : item.status === "matched"
+                                    ? "Emparejado"
+                                    : "Desconocido"
+                                }
+                                color={
+                                  item.status === "pending"
+                                    ? "warning"
+                                    : item.status === "delivered"
+                                    ? "success"
+                                    : item.status === "matched"
+                                    ? "info"
+                                    : "default"
+                                }
+                                size="small"
+                              />
+                            </Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{ mb: 1 }}
+                            >
+                              Fecha de encuentro:{" "}
+                              {dayjs(item.foundDate).format("DD/MM/YYYY")}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Encontrado en: {item.location}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
                 ) : (
-                  <Typography color="text.secondary">
+                  <Typography color="text.secondary" textAlign="center">
                     No has reportado ningún objeto encontrado aún.
                   </Typography>
                 )}
