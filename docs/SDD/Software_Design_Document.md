@@ -410,7 +410,3 @@ interface ItemBase {
 1. **Repository Pattern**
    - Abstracción de acceso a datos
    - Servicios Firebase encapsulados
-
-ok no, vamos a empezar otra vez, revisa el proyecto, y mira los modelos que usamos, se encuentran en la carpeta @/types , ahora quiero que implementemos estado, primero quieor que nos enfoqes en que cuando un usuario entre en el @RegisterPage.tsx se captre el estado del usuario, lo que el usuairo ingrese se capture en el estado y se muestre luego en @ProfilePage.tsx , luego cuando el usuario entre y se dirija a @ReportPage.tsx y haga un reporte el bjeto que se cree sea un LostItem de los que definimos en @models.ts , los LostItem que se reportan deben aparecer luego en @MyLostItemsPage.tsx , luego si el usuario quiero hacer logout pues cierra la sesion, entiendes??
-
-me encanta, ahora vamos a organizar el estado cuando se hace un reporte de un objeto encontrado desde @FoundItemForm.tsx , cuando un usuario hace el reporte aqui el objeto se crea como un FoundItem de los que definimos en @models.ts , estos objetos son los que luego se mostraran en la parte de @MatchesPage.tsx si el objeto de @MyLostItemsPage.tsx tiene cierto match con los objetos reportados en @FoundItemForm.tsx , por el momento vamos a hacer de que los objetos que sean del mismo tipo son match, entindes?, por el momento como estamos haciendolo con estado y no con base de datos, el campo finderId del FoundItem vamos a simularlo, entiendes? dime que entiendes?

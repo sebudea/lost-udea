@@ -3,14 +3,28 @@ import { AuthLayout } from "../components/Layout/AuthLayout";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import CategoryIcon from "@mui/icons-material/Category";
+import { useAuthContext } from "../context/AuthContext";
+import { useEffect } from "react";
 
 interface HomePageProps {
   isDarkMode: boolean;
   onToggleTheme: () => void;
 }
 
-export function HomePage({ isDarkMode, onToggleTheme }: HomePageProps) {
+export const HomePage = ({ isDarkMode, onToggleTheme }: HomePageProps) => {
   const navigate = useNavigate();
+  const { user, loading } = useAuthContext();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      // Si no hay usuario autenticado, redirigir al landing
+      navigate("/");
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return null; // O un componente de loading
+  }
 
   return (
     <AuthLayout isDarkMode={isDarkMode} onToggleTheme={onToggleTheme}>
@@ -39,7 +53,7 @@ export function HomePage({ isDarkMode, onToggleTheme }: HomePageProps) {
             align="center"
             sx={{ fontWeight: 700 }}
           >
-            Bienvenido a Lost UdeA
+            Bienvenido a Lost UdeA, {user?.displayName}
           </Typography>
 
           <Paper
@@ -98,4 +112,4 @@ export function HomePage({ isDarkMode, onToggleTheme }: HomePageProps) {
       </Container>
     </AuthLayout>
   );
-}
+};

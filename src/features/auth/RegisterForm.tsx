@@ -1,9 +1,18 @@
-import { Box, TextField, Button, Typography } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
-import { useUserStore } from "../../stores/userStore";
-import type { UserFormData } from "../../types/models";
+import { useAuthContext } from "../../context/AuthContext";
+import { db } from "../../config/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { useState } from "react";
+import { User } from "../../types/models";
 
 const validationSchema = yup.object({
   email: yup
@@ -22,22 +31,46 @@ const validationSchema = yup.object({
     .matches(/^\d{8,10}$/, "El número debe tener entre 8 y 10 dígitos"),
 });
 
-export function RegisterForm() {
+export const RegisterForm = () => {
   const navigate = useNavigate();
-  const register = useUserStore((state) => state.register);
+  const { user: authUser } = useAuthContext();
+  const [loading, setLoading] = useState(false);
 
-  const formik = useFormik<UserFormData>({
+  const formik = useFormik({
     initialValues: {
-      email: "",
-      fullName: "",
+      email: authUser?.email || "",
+      fullName: authUser?.displayName || "",
       phoneNumber: "",
       idNumber: "",
-      role: "seeker",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      register(values);
-      navigate("/home");
+    onSubmit: async (values) => {
+      try {
+        setLoading(true);
+        if (!authUser) {
+          throw new Error("No hay usuario autenticado");
+        }
+
+        // Crear una instancia de User con los datos del formulario
+        const user = new User({
+          id: authUser.uid,
+          email: values.email,
+          fullName: values.fullName,
+          phoneNumber: values.phoneNumber,
+          idNumber: values.idNumber,
+          createdAt: new Date(),
+        });
+
+        // Guardar en Firestore usando el método toFirestore
+        await setDoc(doc(db, "users", authUser.uid), user.toFirestore());
+
+        navigate("/home");
+      } catch (error) {
+        console.error("Error registering user:", error);
+        // Aquí podrías mostrar un mensaje de error al usuario
+      } finally {
+        setLoading(false);
+      }
     },
   });
 
@@ -68,6 +101,7 @@ export function RegisterForm() {
             onBlur={formik.handleBlur}
             error={formik.touched.email && Boolean(formik.errors.email)}
             helperText={formik.touched.email && formik.errors.email}
+            disabled={Boolean(authUser?.email)}
           />
 
           <TextField
@@ -114,11 +148,19 @@ export function RegisterForm() {
             size="large"
             fullWidth
             sx={{ mt: 2 }}
+            disabled={loading}
           >
-            Completar registro
+            {loading ? (
+              <>
+                <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+                Registrando...
+              </>
+            ) : (
+              "Completar registro"
+            )}
           </Button>
         </Box>
       </form>
     </>
   );
-}
+};

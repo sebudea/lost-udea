@@ -1,12 +1,65 @@
 import { ItemType, Location, FoundItemStatus, LostItemStatus, MatchStatus } from './enums';
 
-export interface User {
+// Interface base para el usuario
+export interface IUser {
   id: string;
   email: string;
   fullName: string;
-  createdAt?: Date; // si es un finder no se le pone createdAt, cuando ya es un seeker se le pone el createdAt
-  phoneNumber?: string; // Requerido solo para seekers
-  idNumber?: string; // Cédula, requerido solo para seekers
+  createdAt: Date;
+  phoneNumber?: string;
+  idNumber?: string;
+}
+
+// Clase User que implementa la interfaz
+export class User implements IUser {
+  id: string;
+  email: string;
+  fullName: string;
+  createdAt: Date;
+  phoneNumber?: string;
+  idNumber?: string;
+
+  constructor(data: Partial<IUser>) {
+    this.id = data.id || '';
+    this.email = data.email || '';
+    this.fullName = data.fullName || '';
+    this.createdAt = data.createdAt || new Date();
+    this.phoneNumber = data.phoneNumber;
+    this.idNumber = data.idNumber;
+  }
+
+  // Método para convertir a un objeto plano para Firestore
+  toFirestore() {
+    return {
+      email: this.email,
+      fullName: this.fullName,
+      createdAt: this.createdAt.toISOString(),
+      ...(this.phoneNumber && { phoneNumber: this.phoneNumber }),
+      ...(this.idNumber && { idNumber: this.idNumber })
+    };
+  }
+
+  // Método estático para crear una instancia desde un documento Firestore
+  static fromFirestore(id: string, data: any): User {
+    return new User({
+      id,
+      email: data.email,
+      fullName: data.fullName,
+      createdAt: new Date(data.createdAt),
+      phoneNumber: data.phoneNumber,
+      idNumber: data.idNumber
+    });
+  }
+
+  // Método para verificar si el usuario es un seeker (tiene datos completos)
+  isSeeker(): boolean {
+    return !!(this.phoneNumber && this.idNumber);
+  }
+
+  // Método para verificar si el usuario es un finder (solo datos básicos)
+  isFinder(): boolean {
+    return !this.isSeeker();
+  }
 }
 
 export interface FoundItem {
@@ -14,37 +67,32 @@ export interface FoundItem {
   type: ItemType;
   location: Location;
   foundDate: Date;
-  // description: string; // Descripción generada por IA, por ahora no lo usaremos
   image: string;
   status: FoundItemStatus;
-  finderId: string; // ID del usuario que lo encontró
+  finderId: string;
 }
 
 export interface LostItem {
   id: string;
   type: ItemType;
-  locations: Location[]; // Array de posibles lugares (máximo 2)
+  locations: Location[];
   lostDate: Date;
-  description: string; // Descripción proporcionada por el usuario
-  imageUrl?: string; // URL de la imagen (opcional)
+  description: string;
+  imageUrl?: string;
   status: LostItemStatus;
-  seekerId: string; // ID del usuario que lo perdió
+  seekerId: string;
 }
 
 export interface Match {
   id: string;
-  lostItemId: string; // ID del objeto perdido
-  foundItemId: string; // ID del objeto encontrado
+  lostItemId: string;
+  foundItemId: string;
   status: MatchStatus;
-  matchDate: Date; // Fecha cuando se hizo el match
+  matchDate: Date;
 }
 
-// Tipos auxiliares para el manejo de formularios y validaciones
-export type UserRole = "finder" | "seeker";
-
-export interface UserFormData extends Omit<User, 'id' | 'createdAt'> {
-  role: UserRole;
-}
+// Tipos auxiliares para formularios
+export interface UserFormData extends Omit<IUser, 'id' | 'createdAt'> {}
 
 export interface FoundItemFormData extends Omit<FoundItem, 'id' | 'status' | 'finderId'> {}
 
