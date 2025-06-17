@@ -10,42 +10,86 @@ import {
   CardContent,
   Grid,
   Chip,
+  CircularProgress,
 } from "@mui/material";
 import { AuthLayout } from "../components/Layout/AuthLayout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TabPanel } from "../components/TabPanel/TabPanel";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
 import { useItemsStore } from "../stores/itemsStore";
 import dayjs from "dayjs";
+import { auth } from "../config/firebase";
 
 interface ProfilePageProps {
   isDarkMode: boolean;
   onToggleTheme: () => void;
 }
 
-export function ProfilePage({ isDarkMode, onToggleTheme }: ProfilePageProps) {
+export const ProfilePage = ({
+  isDarkMode,
+  onToggleTheme,
+}: ProfilePageProps) => {
   const [tabValue, setTabValue] = useState(0);
   const navigate = useNavigate();
-  const currentUser = useUserStore((state) => state.currentUser);
-  const logout = useUserStore((state) => state.logout);
+  const { currentUser, isLoading, error } = useUserStore();
   const { getLostItemsByUser, getFoundItemsByUser } = useItemsStore();
 
   const lostItems = currentUser ? getLostItemsByUser(currentUser.id) : [];
   const foundItems = currentUser ? getFoundItemsByUser(currentUser.id) : [];
 
+  useEffect(() => {
+    // Si no está cargando y no hay usuario, redirigir al inicio
+    if (!isLoading && !currentUser) {
+      navigate("/");
+    }
+  }, [isLoading, currentUser, navigate]);
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography color="error">{error}</Typography>
+      </Box>
+    );
+  }
+
   if (!currentUser) {
-    navigate("/");
     return null;
   }
 
@@ -107,10 +151,18 @@ export function ProfilePage({ isDarkMode, onToggleTheme }: ProfilePageProps) {
                 <strong>Email:</strong> {currentUser.email}
               </Typography>
               <Typography>
-                <strong>Teléfono:</strong> {currentUser.phoneNumber}
+                <strong>Teléfono:</strong>{" "}
+                {currentUser.phoneNumber || "No especificado"}
               </Typography>
               <Typography>
-                <strong>Identificación:</strong> {currentUser.idNumber}
+                <strong>Identificación:</strong>{" "}
+                {currentUser.idNumber || "No especificado"}
+              </Typography>
+              <Typography>
+                <strong>Tipo de usuario:</strong>{" "}
+                {currentUser.isSeeker()
+                  ? "Usuario registrado"
+                  : "Usuario básico"}
               </Typography>
             </Box>
           </Paper>
@@ -311,4 +363,4 @@ export function ProfilePage({ isDarkMode, onToggleTheme }: ProfilePageProps) {
       </Container>
     </AuthLayout>
   );
-}
+};

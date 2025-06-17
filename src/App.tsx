@@ -1,6 +1,6 @@
 import { Box, ThemeProvider, useMediaQuery, CssBaseline } from "@mui/material";
 import { getTheme } from "./styles/theme";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { RegisterPage } from "./pages/RegisterPage";
 import { HomePage } from "./pages/HomePage";
@@ -14,12 +14,18 @@ import { FoundLocationPage } from "./pages/FoundLocationPage";
 import { FoundMatchesPage } from "./pages/FoundMatchesPage";
 import { ThankYouPage } from "./pages/ThankYouPage";
 import { AuthProvider } from "./context/AuthContext";
+import { useUserStore } from "./stores/userStore";
 
 function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [mode, setMode] = useState<"light" | "dark">(
     prefersDarkMode ? "dark" : "light"
   );
+  const initialize = useUserStore((state) => state.initialize);
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
 
   const theme = useMemo(() => getTheme(mode), [mode]);
 

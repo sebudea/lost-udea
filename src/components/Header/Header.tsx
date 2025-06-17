@@ -12,6 +12,7 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../../config/firebase";
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -25,9 +26,13 @@ export const Header = ({ isDarkMode, onToggleTheme }: HeaderProps) => {
     navigate("/profile");
   };
 
-  const handleLogout = () => {
-    // TODO: Implement logout logic
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   const buttonStyles = {
