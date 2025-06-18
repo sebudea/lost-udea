@@ -15,10 +15,10 @@ export function ImageUpload({
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      onImageChange(file);
+      onImageChange?.(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        onPreviewChange(reader.result as string);
+        onPreviewChange?.(reader.result as string);
       };
       reader.readAsDataURL(file);
     }

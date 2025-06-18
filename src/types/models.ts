@@ -233,7 +233,6 @@ export class Match implements IMatch {
     });
   }
 }
-
 // Tipos auxiliares para formularios
 export interface UserFormData extends Omit<IUser, 'id' | 'createdAt'> {}
 
