@@ -19,6 +19,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
 import { useItemsStore } from "../stores/itemsStore";
+import { LostItemStatus, FoundItemStatus } from "../types/enums";
 import dayjs from "dayjs";
 import { auth } from "../config/firebase";
 
@@ -207,26 +208,26 @@ export const ProfilePage = ({
                               </Typography>
                               <Chip
                                 label={
-                                  item.status === "pending"
-                                    ? "Pendiente"
-                                    : item.status === "found"
+                                  item.status === LostItemStatus.SEARCHING
+                                    ? "Buscando"
+                                    : item.status === LostItemStatus.FOUND
                                     ? "Encontrado"
-                                    : item.status === "matched"
-                                    ? "Emparejado"
-                                    : "Desistido"
+                                    : item.status === LostItemStatus.CLOSED
+                                    ? "Desistido"
+                                    : "Desconocido"
                                 }
                                 color={
-                                  item.status === "pending"
+                                  item.status === LostItemStatus.SEARCHING
                                     ? "warning"
-                                    : item.status === "found"
+                                    : item.status === LostItemStatus.FOUND
                                     ? "success"
-                                    : item.status === "matched"
-                                    ? "info"
+                                    : item.status === LostItemStatus.CLOSED
+                                    ? "default"
                                     : "default"
                                 }
                                 size="small"
                                 sx={
-                                  item.status === "desisted"
+                                  item.status === LostItemStatus.CLOSED
                                     ? {
                                         bgcolor: "grey.500",
                                         color: "white",
@@ -315,20 +316,20 @@ export const ProfilePage = ({
                               </Typography>
                               <Chip
                                 label={
-                                  item.status === "pending"
+                                  item.status === FoundItemStatus.PENDING
                                     ? "Pendiente"
-                                    : item.status === "delivered"
+                                    : item.status === FoundItemStatus.DELIVERED
                                     ? "Entregado"
-                                    : item.status === "matched"
+                                    : item.status === FoundItemStatus.MATCHED
                                     ? "Emparejado"
                                     : "Desconocido"
                                 }
                                 color={
-                                  item.status === "pending"
+                                  item.status === FoundItemStatus.PENDING
                                     ? "warning"
-                                    : item.status === "delivered"
+                                    : item.status === FoundItemStatus.DELIVERED
                                     ? "success"
-                                    : item.status === "matched"
+                                    : item.status === FoundItemStatus.MATCHED
                                     ? "info"
                                     : "default"
                                 }

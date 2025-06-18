@@ -150,7 +150,7 @@ export class LostItem implements ILostItem {
     this.lostDate = data.lostDate || new Date();
     this.description = data.description || '';
     this.imageUrl = data.imageUrl;
-    this.status = data.status || LostItemStatus.SEARCHING;
+    this.status = data.status !== undefined ? data.status : LostItemStatus.SEARCHING;
     this.seekerId = data.seekerId || '';
   }
 
