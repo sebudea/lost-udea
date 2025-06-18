@@ -1,4 +1,4 @@
-import { ItemType, Location, FoundItemStatus, LostItemStatus, MatchStatus } from './enums';
+import { ItemType, Location, FoundItemStatus, LostItemStatus } from './enums';
 import { ItemTypeData } from './itemType';
 
 // Interface base para el usuario
@@ -187,7 +187,6 @@ export interface IMatch {
   id: string;
   lostItemId: string;
   foundItemId: string;
-  status: MatchStatus;
   matchDate: Date;
 }
 
@@ -196,14 +195,12 @@ export class Match implements IMatch {
   id: string;
   lostItemId: string;
   foundItemId: string;
-  status: MatchStatus;
   matchDate: Date;
 
   constructor(data: Partial<IMatch>) {
     this.id = data.id || '';
     this.lostItemId = data.lostItemId || '';
     this.foundItemId = data.foundItemId || '';
-    this.status = data.status || MatchStatus.PENDING;
     this.matchDate = data.matchDate || new Date();
   }
 
@@ -212,7 +209,6 @@ export class Match implements IMatch {
     return {
       lostItemId: this.lostItemId,
       foundItemId: this.foundItemId,
-      status: this.status,
       matchDate: this.matchDate.toISOString(),
     };
   }
@@ -223,7 +219,6 @@ export class Match implements IMatch {
       id,
       lostItemId: data.lostItemId,
       foundItemId: data.foundItemId,
-      status: data.status,
       matchDate: new Date(data.matchDate),
     });
   }

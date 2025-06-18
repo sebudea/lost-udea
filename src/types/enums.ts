@@ -50,9 +50,3 @@ export enum FoundItemStatus {
   DELIVERED = 'delivered',
   MATCHED = 'matched'
 }
-
-export enum MatchStatus {
-  PENDING = 'pending',
-  VERIFIED = 'verified',
-  COMPLETED = 'completed'
-}
