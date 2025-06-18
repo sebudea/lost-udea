@@ -6,6 +6,11 @@ export enum ItemType {
   OTHER = 'other'
 }
 
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin'
+}
+
 export enum Location {
   BLOQUE_1 = "Bloque 1 - Fac. Ciencias Exactas y Naturales",
   BLOQUE_2 = "Bloque 2 - Fac. Ciencias Exactas y Naturales",

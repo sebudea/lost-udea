@@ -5,6 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import CategoryIcon from "@mui/icons-material/Category";
 import { useAuthContext } from "../context/AuthContext";
 import { useEffect } from "react";
+import { UserRole } from "../types/enums";
 
 interface HomePageProps {
   isDarkMode: boolean;
@@ -19,6 +20,9 @@ export const HomePage = ({ isDarkMode, onToggleTheme }: HomePageProps) => {
     if (!loading && !user) {
       // Si no hay usuario autenticado, redirigir al landing
       navigate("/");
+    } else if (!loading && user?.role === UserRole.ADMIN) {
+      // Si es admin, redirigir al dashboard administrativo
+      navigate("/admin-dashboard");
     }
   }, [user, loading, navigate]);
 

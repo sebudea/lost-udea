@@ -13,6 +13,7 @@ import { MatchesPage } from "./pages/MatchesPage";
 import { FoundLocationPage } from "./pages/FoundLocationPage";
 import { FoundMatchesPage } from "./pages/FoundMatchesPage";
 import { ThankYouPage } from "./pages/ThankYouPage";
+import { AdminDashboardPage } from "./pages/AdminDashboardPage";
 import { AuthProvider } from "./context/AuthContext";
 import { useUserStore } from "./stores/userStore";
 
@@ -85,6 +86,10 @@ function App() {
               <Route
                 path="/thank-you/:itemId"
                 element={<ThankYouPage {...themeProps} />}
+              />
+              <Route
+                path="/admin-dashboard"
+                element={<AdminDashboardPage {...themeProps} />}
               />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

@@ -1,11 +1,16 @@
 import { createContext, useContext, ReactNode } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { User } from "firebase/auth";
+import { User as FirebaseUser } from "firebase/auth";
+import { UserRole } from "../types/enums";
+
+interface AuthUser extends FirebaseUser {
+  role?: UserRole;
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
-  signInWithGoogle: () => Promise<User>;
+  signInWithGoogle: () => Promise<AuthUser>;
   signOut: () => Promise<void>;
 }
 

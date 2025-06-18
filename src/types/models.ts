@@ -1,4 +1,4 @@
-import { ItemType, Location, FoundItemStatus, LostItemStatus } from './enums';
+import { ItemType, Location, FoundItemStatus, LostItemStatus, UserRole } from './enums';
 import { ItemTypeData } from './itemType';
 
 // Interface base para el usuario
@@ -9,6 +9,7 @@ export interface IUser {
   createdAt: Date;
   phoneNumber?: string;
   idNumber?: string;
+  role: UserRole;
 }
 
 // Clase User que implementa la interfaz
@@ -19,6 +20,7 @@ export class User implements IUser {
   createdAt: Date;
   phoneNumber?: string;
   idNumber?: string;
+  role: UserRole;
 
   constructor(data: Partial<IUser>) {
     this.id = data.id || '';
@@ -27,6 +29,7 @@ export class User implements IUser {
     this.createdAt = data.createdAt || new Date();
     this.phoneNumber = data.phoneNumber;
     this.idNumber = data.idNumber;
+    this.role = data.role || UserRole.USER;
   }
 
   // Método para convertir a un objeto plano para Firestore
@@ -35,6 +38,7 @@ export class User implements IUser {
       email: this.email,
       fullName: this.fullName,
       createdAt: this.createdAt.toISOString(),
+      role: this.role,
       ...(this.phoneNumber && { phoneNumber: this.phoneNumber }),
       ...(this.idNumber && { idNumber: this.idNumber })
     };
@@ -48,7 +52,8 @@ export class User implements IUser {
       fullName: data.fullName,
       createdAt: new Date(data.createdAt),
       phoneNumber: data.phoneNumber,
-      idNumber: data.idNumber
+      idNumber: data.idNumber,
+      role: data.role || UserRole.USER
     });
   }
 
@@ -60,6 +65,11 @@ export class User implements IUser {
   // Método para verificar si el usuario es un finder (solo datos básicos)
   isFinder(): boolean {
     return !this.isSeeker();
+  }
+
+  // Método para verificar si el usuario es admin
+  isAdmin(): boolean {
+    return this.role === UserRole.ADMIN;
   }
 }
 
