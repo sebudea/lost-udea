@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { LostItem, FoundItem, Match } from '../types/models';
-import { ItemType, Location, LostItemStatus, FoundItemStatus, MatchStatus } from '../types/enums';
+import { ItemType, Location, LostItemStatus, FoundItemStatus } from '../types/enums';
 import { 
   collection, 
   doc, 
@@ -223,7 +223,6 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
         id: docRef.id,
         lostItemId,
         foundItemId,
-        status: MatchStatus.PENDING,
         matchDate: new Date(),
       });
       

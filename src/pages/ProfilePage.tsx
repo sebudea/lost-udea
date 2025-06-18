@@ -34,18 +34,34 @@ export const ProfilePage = ({
 }: ProfilePageProps) => {
   const [tabValue, setTabValue] = useState(0);
   const navigate = useNavigate();
-  const { currentUser, isLoading, error } = useUserStore();
-  const { getLostItemsByUser, getFoundItemsByUser } = useItemsStore();
+  const {
+    currentUser,
+    isLoading: userLoading,
+    error: userError,
+  } = useUserStore();
+  const {
+    getLostItemsByUser,
+    getFoundItemsByUser,
+    initialize,
+    isLoading: itemsLoading,
+    error: itemsError,
+  } = useItemsStore();
+
+  // Inicializar la suscripción a Firestore
+  useEffect(() => {
+    const unsubscribe = initialize();
+    return () => unsubscribe();
+  }, [initialize]);
 
   const lostItems = currentUser ? getLostItemsByUser(currentUser.id) : [];
   const foundItems = currentUser ? getFoundItemsByUser(currentUser.id) : [];
 
   useEffect(() => {
     // Si no está cargando y no hay usuario, redirigir al inicio
-    if (!isLoading && !currentUser) {
+    if (!userLoading && !currentUser) {
       navigate("/");
     }
-  }, [isLoading, currentUser, navigate]);
+  }, [userLoading, currentUser, navigate]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -60,7 +76,7 @@ export const ProfilePage = ({
     }
   };
 
-  if (isLoading) {
+  if (userLoading || itemsLoading) {
     return (
       <Box
         sx={{
@@ -75,7 +91,7 @@ export const ProfilePage = ({
     );
   }
 
-  if (error) {
+  if (userError || itemsError) {
     return (
       <Box
         sx={{
@@ -85,7 +101,7 @@ export const ProfilePage = ({
           justifyContent: "center",
         }}
       >
-        <Typography color="error">{error}</Typography>
+        <Typography color="error">{userError || itemsError}</Typography>
       </Box>
     );
   }
