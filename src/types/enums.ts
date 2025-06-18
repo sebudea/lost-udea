@@ -1,3 +1,11 @@
+export enum ItemType {
+  ELECTRONICS = 'electronics',
+  DOCUMENTS = 'documents',
+  CLOTHING = 'clothing',
+  ACCESSORIES = 'accessories',
+  OTHER = 'other'
+}
+
 export enum Location {
   BLOQUE_1 = "Bloque 1 - Fac. Ciencias Exactas y Naturales",
   BLOQUE_2 = "Bloque 2 - Fac. Ciencias Exactas y Naturales",
@@ -31,11 +39,20 @@ export enum Location {
   OTRO = "Otro"
 }
 
-export interface ItemType {
-  value: string;
-  label: string;
+export enum LostItemStatus {
+  SEARCHING = 'searching',
+  FOUND = 'found',
+  CLOSED = 'closed'
 }
 
-export type FoundItemStatus = "pending" | "delivered" | "matched";
-export type LostItemStatus = "pending" | "found" | "matched" | "desisted";
-export type MatchStatus = "pending" | "verified" | "completed";
+export enum FoundItemStatus {
+  PENDING = 'pending',
+  DELIVERED = 'delivered',
+  MATCHED = 'matched'
+}
+
+export enum MatchStatus {
+  PENDING = 'pending',
+  VERIFIED = 'verified',
+  COMPLETED = 'completed'
+}

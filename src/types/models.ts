@@ -62,7 +62,8 @@ export class User implements IUser {
   }
 }
 
-export interface FoundItem {
+// Interface base para FoundItem
+export interface IFoundItem {
   id: string;
   type: ItemType;
   location: Location;
@@ -72,7 +73,54 @@ export interface FoundItem {
   finderId: string;
 }
 
-export interface LostItem {
+// Clase FoundItem que implementa la interfaz
+export class FoundItem implements IFoundItem {
+  id: string;
+  type: ItemType;
+  location: Location;
+  foundDate: Date;
+  image: string;
+  status: FoundItemStatus;
+  finderId: string;
+
+  constructor(data: Partial<IFoundItem>) {
+    this.id = data.id || '';
+    this.type = data.type || ItemType.OTHER;
+    this.location = data.location || Location.OTRO;
+    this.foundDate = data.foundDate || new Date();
+    this.image = data.image || '';
+    this.status = data.status || FoundItemStatus.PENDING;
+    this.finderId = data.finderId || '';
+  }
+
+  // Método para convertir a un objeto plano para Firestore
+  toFirestore() {
+    return {
+      type: this.type,
+      location: this.location,
+      foundDate: this.foundDate.toISOString(),
+      image: this.image,
+      status: this.status,
+      finderId: this.finderId,
+    };
+  }
+
+  // Método estático para crear una instancia desde un documento Firestore
+  static fromFirestore(id: string, data: any): FoundItem {
+    return new FoundItem({
+      id,
+      type: data.type,
+      location: data.location,
+      foundDate: new Date(data.foundDate),
+      image: data.image,
+      status: data.status,
+      finderId: data.finderId,
+    });
+  }
+}
+
+// Interface base para LostItem
+export interface ILostItem {
   id: string;
   type: ItemType;
   locations: Location[];
@@ -83,7 +131,58 @@ export interface LostItem {
   seekerId: string;
 }
 
-export interface Match {
+// Clase LostItem que implementa la interfaz
+export class LostItem implements ILostItem {
+  id: string;
+  type: ItemType;
+  locations: Location[];
+  lostDate: Date;
+  description: string;
+  imageUrl?: string;
+  status: LostItemStatus;
+  seekerId: string;
+
+  constructor(data: Partial<ILostItem>) {
+    this.id = data.id || '';
+    this.type = data.type || ItemType.OTHER;
+    this.locations = data.locations || [];
+    this.lostDate = data.lostDate || new Date();
+    this.description = data.description || '';
+    this.imageUrl = data.imageUrl;
+    this.status = data.status || LostItemStatus.SEARCHING;
+    this.seekerId = data.seekerId || '';
+  }
+
+  // Método para convertir a un objeto plano para Firestore
+  toFirestore() {
+    return {
+      type: this.type,
+      locations: this.locations,
+      lostDate: this.lostDate.toISOString(),
+      description: this.description,
+      ...(this.imageUrl && { imageUrl: this.imageUrl }),
+      status: this.status,
+      seekerId: this.seekerId,
+    };
+  }
+
+  // Método estático para crear una instancia desde un documento Firestore
+  static fromFirestore(id: string, data: any): LostItem {
+    return new LostItem({
+      id,
+      type: data.type,
+      locations: data.locations,
+      lostDate: new Date(data.lostDate),
+      description: data.description,
+      imageUrl: data.imageUrl,
+      status: data.status,
+      seekerId: data.seekerId,
+    });
+  }
+}
+
+// Interface base para Match
+export interface IMatch {
   id: string;
   lostItemId: string;
   foundItemId: string;
@@ -91,9 +190,47 @@ export interface Match {
   matchDate: Date;
 }
 
+// Clase Match que implementa la interfaz
+export class Match implements IMatch {
+  id: string;
+  lostItemId: string;
+  foundItemId: string;
+  status: MatchStatus;
+  matchDate: Date;
+
+  constructor(data: Partial<IMatch>) {
+    this.id = data.id || '';
+    this.lostItemId = data.lostItemId || '';
+    this.foundItemId = data.foundItemId || '';
+    this.status = data.status || MatchStatus.PENDING;
+    this.matchDate = data.matchDate || new Date();
+  }
+
+  // Método para convertir a un objeto plano para Firestore
+  toFirestore() {
+    return {
+      lostItemId: this.lostItemId,
+      foundItemId: this.foundItemId,
+      status: this.status,
+      matchDate: this.matchDate.toISOString(),
+    };
+  }
+
+  // Método estático para crear una instancia desde un documento Firestore
+  static fromFirestore(id: string, data: any): Match {
+    return new Match({
+      id,
+      lostItemId: data.lostItemId,
+      foundItemId: data.foundItemId,
+      status: data.status,
+      matchDate: new Date(data.matchDate),
+    });
+  }
+}
+
 // Tipos auxiliares para formularios
 export interface UserFormData extends Omit<IUser, 'id' | 'createdAt'> {}
 
-export interface FoundItemFormData extends Omit<FoundItem, 'id' | 'status' | 'finderId'> {}
+export interface FoundItemFormData extends Omit<IFoundItem, 'id' | 'status' | 'finderId'> {}
 
-export interface LostItemFormData extends Omit<LostItem, 'id' | 'status' | 'seekerId'> {}
+export interface LostItemFormData extends Omit<ILostItem, 'id' | 'status' | 'seekerId'> {}
