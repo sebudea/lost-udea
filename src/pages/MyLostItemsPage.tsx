@@ -13,18 +13,20 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import { AuthLayout } from "../components/Layout/AuthLayout";
 import HomeIcon from "@mui/icons-material/Home";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 import { useNavigate } from "react-router-dom";
 import type { LostItem } from "../types/models";
-import { Location } from "../types/enums";
+import { Location, LostItemStatus, FoundItemStatus } from "../types/enums";
 import dayjs from "dayjs";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import SearchIcon from "@mui/icons-material/Search";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useItemsStore } from "../stores/itemsStore";
 import { useUserStore } from "../stores/userStore";
 
@@ -42,19 +44,33 @@ export function MyLostItemsPage({
   const [itemFound, setItemFound] = useState<LostItem | null>(null);
 
   const currentUser = useUserStore((state) => state.currentUser);
-  const { getLostItemsByUser, deleteLostItem, updateLostItem, foundItems } =
-    useItemsStore();
+  const {
+    getLostItemsByUser,
+    updateLostItem,
+    foundItems,
+    initialize,
+    isLoading,
+    error,
+  } = useItemsStore();
 
-  // Obtener solo los objetos perdidos pendientes
+  // Inicializar la suscripción a Firestore
+  useEffect(() => {
+    const unsubscribe = initialize();
+    return () => unsubscribe();
+  }, [initialize]);
+
+  // Obtener solo los objetos perdidos en búsqueda
   const allUserItems = currentUser ? getLostItemsByUser(currentUser.id) : [];
-  const lostItems = allUserItems.filter((item) => item.status === "pending");
+  const lostItems = allUserItems.filter(
+    (item) => item.status === LostItemStatus.SEARCHING
+  );
 
   // Función para contar coincidencias para un item específico
   const getMatchesCount = (item: LostItem) => {
     return foundItems.filter(
       (foundItem) =>
         foundItem.type.value === item.type.value &&
-        foundItem.status === "pending"
+        foundItem.status === FoundItemStatus.PENDING
     ).length;
   };
 
@@ -67,10 +83,16 @@ export function MyLostItemsPage({
     setItemToDelete(item);
   };
 
-  const handleConfirmDesist = () => {
+  const handleConfirmDesist = async () => {
     if (itemToDelete) {
-      updateLostItem(itemToDelete.id, { status: "desisted" });
-      setItemToDelete(null);
+      try {
+        await updateLostItem(itemToDelete.id, {
+          status: LostItemStatus.CLOSED,
+        });
+        setItemToDelete(null);
+      } catch (error) {
+        console.error("Error al desistir del objeto:", error);
+      }
     }
   };
 
@@ -82,11 +104,15 @@ export function MyLostItemsPage({
     setItemFound(item);
   };
 
-  const handleConfirmFound = () => {
+  const handleConfirmFound = async () => {
     if (itemFound) {
-      updateLostItem(itemFound.id, { status: "found" });
-      navigate(`/found-location/${itemFound.id}`);
-      setItemFound(null);
+      try {
+        await updateLostItem(itemFound.id, { status: LostItemStatus.FOUND });
+        navigate(`/found-location/${itemFound.id}`);
+        setItemFound(null);
+      } catch (error) {
+        console.error("Error al marcar como encontrado:", error);
+      }
     }
   };
 
@@ -120,7 +146,24 @@ export function MyLostItemsPage({
             Mis Objetos Perdidos
           </Typography>
 
-          {lostItems.length > 0 ? (
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
+
+          {isLoading ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "200px",
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          ) : lostItems.length > 0 ? (
             <Grid container spacing={3}>
               {lostItems.map((item) => (
                 <Grid item xs={12} key={item.id}>

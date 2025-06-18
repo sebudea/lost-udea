@@ -104,24 +104,10 @@ export function FoundItemForm({ onSuccess }: FoundItemFormProps) {
           authUser.displayName || ""
         );
 
-        // 3. Convertir la imagen a base64
-        if (!values.image) {
+        // 3. Validar imagen y usar el Base64
+        if (!previewUrl) {
           throw new Error("La imagen es requerida");
         }
-
-        const imageData = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            const result = reader.result;
-            if (typeof result === "string") {
-              resolve(result);
-            } else {
-              reject(new Error("Error al procesar la imagen"));
-            }
-          };
-          reader.onerror = () => reject(reader.error);
-          reader.readAsDataURL(values.image as File);
-        });
 
         // 4. Encontrar el tipo de objeto
         const selectedType = ITEM_TYPES.find(
@@ -131,12 +117,12 @@ export function FoundItemForm({ onSuccess }: FoundItemFormProps) {
           throw new Error("Tipo de objeto inválido");
         }
 
-        // 5. Crear el FoundItem
+        // 5. Crear el FoundItem usando el Base64 directamente
         const foundItem = new FoundItem({
           type: selectedType,
           location: values.location as Location,
           foundDate: values.date,
-          image: imageData,
+          image: previewUrl, // Usamos directamente el Base64
           finderId: userId,
           status: FoundItemStatus.PENDING,
         });
