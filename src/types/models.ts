@@ -1,4 +1,5 @@
 import { ItemType, Location, FoundItemStatus, LostItemStatus, MatchStatus } from './enums';
+import { ItemTypeData } from './itemType';
 
 // Interface base para el usuario
 export interface IUser {
@@ -65,7 +66,7 @@ export class User implements IUser {
 // Interface base para FoundItem
 export interface IFoundItem {
   id: string;
-  type: ItemType;
+  type: ItemTypeData;
   location: Location;
   foundDate: Date;
   image: string;
@@ -76,7 +77,7 @@ export interface IFoundItem {
 // Clase FoundItem que implementa la interfaz
 export class FoundItem implements IFoundItem {
   id: string;
-  type: ItemType;
+  type: ItemTypeData;
   location: Location;
   foundDate: Date;
   image: string;
@@ -85,7 +86,7 @@ export class FoundItem implements IFoundItem {
 
   constructor(data: Partial<IFoundItem>) {
     this.id = data.id || '';
-    this.type = data.type || ItemType.OTHER;
+    this.type = data.type || { value: ItemType.OTHER, label: 'Otro' };
     this.location = data.location || Location.OTRO;
     this.foundDate = data.foundDate || new Date();
     this.image = data.image || '';
@@ -122,7 +123,7 @@ export class FoundItem implements IFoundItem {
 // Interface base para LostItem
 export interface ILostItem {
   id: string;
-  type: ItemType;
+  type: ItemTypeData;
   locations: Location[];
   lostDate: Date;
   description: string;
@@ -134,7 +135,7 @@ export interface ILostItem {
 // Clase LostItem que implementa la interfaz
 export class LostItem implements ILostItem {
   id: string;
-  type: ItemType;
+  type: ItemTypeData;
   locations: Location[];
   lostDate: Date;
   description: string;
@@ -144,7 +145,7 @@ export class LostItem implements ILostItem {
 
   constructor(data: Partial<ILostItem>) {
     this.id = data.id || '';
-    this.type = data.type || ItemType.OTHER;
+    this.type = data.type || { value: ItemType.OTHER, label: 'Otro' };
     this.locations = data.locations || [];
     this.lostDate = data.lostDate || new Date();
     this.description = data.description || '';

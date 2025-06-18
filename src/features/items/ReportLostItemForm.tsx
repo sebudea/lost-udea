@@ -16,6 +16,8 @@ import {
   Checkbox,
   FormControlLabel,
   FormGroup,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -30,7 +32,10 @@ import { useState } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { ImageUpload } from "../../components/ImageUpload/ImageUpload";
 import { useNavigate } from "react-router-dom";
-import type { Location, ItemType, FoundItem, LostItem } from "../../types";
+import type { Location } from "../../types";
+import { ItemTypeData } from "../../types/itemType";
+import { LostItem } from "../../types/models";
+import { LostItemStatus } from "../../types/enums";
 import { useItemsStore } from "../../stores/itemsStore";
 import { useUserStore } from "../../stores/userStore";
 
@@ -66,6 +71,8 @@ export function ReportLostItemForm() {
   const [open, setOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [confirmations, setConfirmations] = useState({
     truthful: false,
     ownership: false,
@@ -94,74 +101,80 @@ export function ReportLostItemForm() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      // Mostrar diálogo de confirmación en lugar de enviar directamente
       setShowConfirmDialog(true);
     },
   });
 
   const handleConfirm = async () => {
     setShowConfirmDialog(false);
+    setIsSubmitting(true);
+    setError(null);
 
-    if (!currentUser) {
-      navigate("/login");
-      return;
-    }
+    try {
+      if (!currentUser) {
+        navigate("/login");
+        return;
+      }
 
-    // Find the matching ItemType object
-    const selectedType = ITEM_TYPES.find(
-      (type) => type.value === formik.values.type
-    );
-    if (!selectedType) {
-      console.error("Invalid item type");
-      return;
-    }
+      // Find the matching ItemType object
+      const selectedType = ITEM_TYPES.find(
+        (type) => type.value === formik.values.type
+      );
+      if (!selectedType) {
+        throw new Error("Tipo de objeto inválido");
+      }
 
-    // Convert image File to data URL if it exists
-    let imageUrl: string | undefined = undefined;
-    if (formik.values.image) {
-      const reader = new FileReader();
-      try {
+      // Convert image File to data URL if it exists
+      let imageUrl: string | undefined = undefined;
+      if (formik.values.image) {
+        const reader = new FileReader();
         imageUrl = await new Promise<string>((resolve, reject) => {
           reader.onload = () => {
             const result = reader.result;
             if (typeof result === "string") {
               resolve(result);
             } else {
-              reject(new Error("Failed to convert image to string"));
+              reject(new Error("Error al procesar la imagen"));
             }
           };
           reader.onerror = () => reject(reader.error);
           reader.readAsDataURL(formik.values.image as File);
         });
-      } catch (error) {
-        console.error("Error converting image:", error);
       }
-    }
 
-    // Create the lost item with proper type and image URL
-    const newItem = {
-      type: selectedType,
-      locations: formik.values.locations,
-      lostDate: formik.values.lostDate,
-      description: formik.values.description,
-      imageUrl,
-      seekerId: currentUser.id,
-    };
+      // Create the lost item
+      const newItem = new LostItem({
+        type: selectedType,
+        locations: formik.values.locations,
+        lostDate: formik.values.lostDate,
+        description: formik.values.description,
+        imageUrl,
+        seekerId: currentUser.id,
+        status: LostItemStatus.SEARCHING,
+        id: "", // This will be set by Firestore
+      });
 
-    // Add to store
-    addLostItem(newItem);
+      // Add to Firestore
+      const itemId = await addLostItem(newItem);
 
-    // Navigate to search results
-    navigate("/search-results", {
-      state: {
-        matches: [],
-        lostItem: {
-          ...newItem,
-          id: Date.now().toString(),
-          status: "searching" as const,
+      // Navigate to search results
+      navigate("/search-results", {
+        state: {
+          matches: [],
+          lostItem: new LostItem({
+            ...newItem,
+            id: itemId,
+          }),
         },
-      },
-    });
+      });
+    } catch (err) {
+      console.error("Error al reportar objeto perdido:", err);
+      setError(
+        err instanceof Error ? err.message : "Error al reportar objeto perdido"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -171,6 +184,12 @@ export function ReportLostItemForm() {
         onSubmit={formik.handleSubmit}
         sx={{ width: "100%" }}
       >
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <FormControl
             fullWidth
@@ -182,8 +201,9 @@ export function ReportLostItemForm() {
               value={formik.values.type}
               onChange={formik.handleChange}
               label="Tipo de Objeto"
+              disabled={isSubmitting}
             >
-              {ITEM_TYPES.map((type: ItemType) => (
+              {ITEM_TYPES.map((type: ItemTypeData) => (
                 <MenuItem key={type.value} value={type.value}>
                   {type.label}
                 </MenuItem>
@@ -214,6 +234,7 @@ export function ReportLostItemForm() {
                 }
               }}
               label="Posibles Ubicaciones (máx. 2)"
+              disabled={isSubmitting}
             >
               {LOCATIONS.map((location: Location) => (
                 <MenuItem
@@ -229,7 +250,9 @@ export function ReportLostItemForm() {
               ))}
             </Select>
             {formik.touched.locations && formik.errors.locations && (
-              <FormHelperText>{formik.errors.locations}</FormHelperText>
+              <FormHelperText>
+                {formik.errors.locations as string}
+              </FormHelperText>
             )}
           </FormControl>
 
@@ -243,6 +266,7 @@ export function ReportLostItemForm() {
                 }
               }}
               maxDate={dayjs().endOf("day")}
+              disabled={isSubmitting}
               slotProps={{
                 textField: {
                   fullWidth: true,
@@ -268,48 +292,46 @@ export function ReportLostItemForm() {
             multiline
             rows={4}
             name="description"
-            label="Descripción del objeto"
-            placeholder="Describe el objeto con el mayor detalle posible (color, marca, características distintivas, etc.)"
+            label="Descripción"
             value={formik.values.description}
             onChange={formik.handleChange}
             error={
               formik.touched.description && Boolean(formik.errors.description)
             }
             helperText={formik.touched.description && formik.errors.description}
+            disabled={isSubmitting}
           />
 
           <ImageUpload
-            onImageChange={(file) => formik.setFieldValue("image", file)}
+            onImageChange={(file) => {
+              formik.setFieldValue("image", file);
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                  setPreviewUrl(reader.result as string);
+                };
+                reader.readAsDataURL(file);
+              } else {
+                setPreviewUrl(null);
+              }
+            }}
             onPreviewChange={setPreviewUrl}
-            error={
-              formik.touched.image ? (formik.errors.image as string) : undefined
-            }
-            optional
+            previewUrl={previewUrl}
+            disabled={isSubmitting}
           />
-
-          {previewUrl && (
-            <Box sx={{ mt: 2, mb: 3, textAlign: "center" }}>
-              <img
-                src={previewUrl}
-                alt="Vista previa"
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: "200px",
-                  borderRadius: "8px",
-                  margin: "0 auto",
-                }}
-              />
-            </Box>
-          )}
 
           <Button
             type="submit"
             variant="contained"
-            size="large"
-            fullWidth
+            color="primary"
+            disabled={isSubmitting || !formik.isValid}
             sx={{ mt: 2 }}
           >
-            Enviar Reporte
+            {isSubmitting ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Reportar Objeto Perdido"
+            )}
           </Button>
         </Box>
       </Box>
@@ -317,17 +339,13 @@ export function ReportLostItemForm() {
       <Dialog
         open={showConfirmDialog}
         onClose={() => setShowConfirmDialog(false)}
-        aria-labelledby="confirm-dialog-title"
       >
-        <DialogTitle id="confirm-dialog-title">
-          Confirmación de Reporte
-        </DialogTitle>
+        <DialogTitle>Confirmación</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Antes de enviar tu reporte, necesitamos que confirmes algunos puntos
-            importantes:
+            Por favor, confirma las siguientes declaraciones antes de continuar:
           </DialogContentText>
-          <FormGroup sx={{ mt: 2 }}>
+          <FormGroup>
             <FormControlLabel
               control={
                 <Checkbox
@@ -335,7 +353,7 @@ export function ReportLostItemForm() {
                   onChange={() => handleConfirmationChange("truthful")}
                 />
               }
-              label="Confirmo que la información proporcionada es verdadera y precisa"
+              label="Declaro que toda la información proporcionada es verdadera"
             />
             <FormControlLabel
               control={
@@ -344,7 +362,7 @@ export function ReportLostItemForm() {
                   onChange={() => handleConfirmationChange("ownership")}
                 />
               }
-              label="Confirmo que soy el legítimo dueño o representante autorizado del objeto perdido"
+              label="Confirmo que soy el dueño legítimo del objeto o estoy autorizado para reportarlo"
             />
             <FormControlLabel
               control={
@@ -353,30 +371,22 @@ export function ReportLostItemForm() {
                   onChange={() => handleConfirmationChange("consequences")}
                 />
               }
-              label="Entiendo que hacer un reporte falso puede tener consecuencias legales y disciplinarias según el reglamento universitario"
+              label="Entiendo que proporcionar información falsa puede tener consecuencias"
             />
           </FormGroup>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => {
-              setShowConfirmDialog(false);
-              setConfirmations({
-                truthful: false,
-                ownership: false,
-                consequences: false,
-              });
-            }}
-          >
-            Cancelar
-          </Button>
+          <Button onClick={() => setShowConfirmDialog(false)}>Cancelar</Button>
           <Button
             onClick={handleConfirm}
-            variant="contained"
-            disabled={!allConfirmed}
-            autoFocus
+            disabled={!allConfirmed || isSubmitting}
+            color="primary"
           >
-            Confirmar y Enviar
+            {isSubmitting ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Confirmar"
+            )}
           </Button>
         </DialogActions>
       </Dialog>

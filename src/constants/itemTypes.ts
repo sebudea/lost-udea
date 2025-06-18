@@ -1,6 +1,6 @@
-import { ItemType } from "../types";
+import { ItemTypeData } from "../types";
 
-export const ITEM_TYPES: ItemType[] = [
+export const ITEM_TYPES: ItemTypeData[] = [
   { value: 'carnet', label: 'Carné Estudiantil' },
   { value: 'documento', label: 'Documento de Identidad' },
   { value: 'celular', label: 'Celular' },
